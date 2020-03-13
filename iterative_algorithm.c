@@ -7,8 +7,8 @@ float num = 1.1640625; //numero di cui voglio effettuare il log2
 
 float a = 0.0;
 
-__uint8_t result[n_iterazioni+1] = {0};
-__int8_t i = 0;
+int result[n_iterazioni+1] = {0};
+int i = 0;
 float risultato = 0.0;
 
 int main(void){
