@@ -35,7 +35,7 @@ module top(
         if(rst)
         begin
             ss              <=  IDLE;
-            count           <= 'd7;                 //parte da 7 perchè la prima comparazione mi dà il msb della parte frazionaria 0.b7b6b5b4...
+            count           <= 'd7;                 //parte da 7 perche la prima comparazione mi da il msb della parte frazionaria 0.b7b6b5b4...
             man             <= '0;
             PowM            <= '0;
             out             <= '0;
@@ -69,16 +69,7 @@ module top(
             end                                                             //end IDLE
             EVAL:
             begin
-            
-                if(PowM < comp)
-                begin
-                    out_next[count] = 0;
-                end
-                else
-                begin
-                    out_next[count] = 1;
-                end
-   
+
                 if(PowM[15])
                 begin
                     out_next[count] = 1;

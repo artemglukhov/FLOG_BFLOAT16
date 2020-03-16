@@ -1,0 +1,120 @@
+/*
+
+Xilinx Vivado v2018.2 (64-bit) [Major: 2018, Minor: 2]
+SW Build: 2258646 on Thu Jun 14 20:03:12 MDT 2018
+IP Build: 2256618 on Thu Jun 14 22:10:49 MDT 2018
+
+Process ID: 1940
+License: Customer
+
+Current time: 	Mon Mar 16 14:16:50 CET 2020
+Time zone: 	Central European Time (Europe/Berlin)
+
+OS: Windows 10
+OS Version: 10.0
+OS Architecture: amd64
+Available processors (cores): 4
+
+Screen size: 1280x720
+Screen resolution (DPI): 96
+Available screens: 1
+Available disk space: 29 GB
+Default font: family=Dialog,name=Dialog,style=plain,size=12
+
+Java version: 	1.8.0_112 64-bit
+Java home: 	C:/Xilinx/Vivado/2018.2/tps/win64/jre
+Java executable location: 	C:/Xilinx/Vivado/2018.2/tps/win64/jre/bin/java.exe
+Java initial memory (-Xms): 	128 MB
+Java maximum memory (-Xmx):	 2 GB
+
+
+User name: 	Andrea
+User home directory: C:/Users/Andrea
+User working directory: C:/Users/Andrea/Documents/GitHub/FLOG_BFLOAT16/Philo_Algorithm
+User country: 	IT
+User language: 	it
+User locale: 	it_IT
+
+RDI_BASEROOT: C:/Xilinx/Vivado
+HDI_APPROOT: C:/Xilinx/Vivado/2018.2
+RDI_DATADIR: C:/Xilinx/Vivado/2018.2/data
+RDI_BINDIR: C:/Xilinx/Vivado/2018.2/bin
+
+Vivado preferences file location: C:/Users/Andrea/AppData/Roaming/Xilinx/Vivado/2018.2/vivado.xml
+Vivado preferences directory: C:/Users/Andrea/AppData/Roaming/Xilinx/Vivado/2018.2/
+Vivado layouts directory: C:/Users/Andrea/AppData/Roaming/Xilinx/Vivado/2018.2/layouts
+PlanAhead jar file location: 	C:/Xilinx/Vivado/2018.2/lib/classes/planAhead.jar
+Vivado log file location: 	C:/Users/Andrea/Documents/GitHub/FLOG_BFLOAT16/Philo_Algorithm/vivado.log
+Vivado journal file location: 	C:/Users/Andrea/Documents/GitHub/FLOG_BFLOAT16/Philo_Algorithm/vivado.jou
+Engine tmp dir: 	C:/Users/Andrea/Documents/GitHub/FLOG_BFLOAT16/Philo_Algorithm/.Xil/Vivado-1940-DESKTOP-V7SILDA
+
+Xilinx Environment Variables
+----------------------------
+XILINX: C:/Xilinx/Vivado/2018.2/ids_lite/ISE
+XILINX_DSP: C:/Xilinx/Vivado/2018.2/ids_lite/ISE
+XILINX_PLANAHEAD: C:/Xilinx/Vivado/2018.2
+XILINX_SDK: C:/Xilinx/SDK/2018.2
+XILINX_VIVADO: C:/Xilinx/Vivado/2018.2
+XILINX_VIVADO_HLS: C:/Xilinx/Vivado/2018.2
+
+
+GUI allocated memory:	205 MB
+GUI max memory:		3,052 MB
+Engine allocated memory: 502 MB
+
+Copyright 1986-2018 Xilinx, Inc. All Rights Reserved.
+
+*/
+
+// TclEventType: START_GUI
+// Tcl Message: start_gui 
+// TclEventType: PROJECT_OPEN_DIALOG
+// [GUI Memory]: 56 MB (+56389kb) [00:00:12]
+// [Engine Memory]: 476 MB (+347871kb) [00:00:12]
+// bx (ck):  Open Project : addNotify
+// Opening Vivado Project: C:\Users\Andrea\Documents\GitHub\FLOG_BFLOAT16\Philo_Algorithm\Philo_Algorithm.xpr. Version: Vivado v2018.2 
+// TclEventType: DEBUG_PROBE_SET_CHANGE
+// Tcl Message: open_project C:/Users/Andrea/Documents/GitHub/FLOG_BFLOAT16/Philo_Algorithm/Philo_Algorithm.xpr 
+// TclEventType: MSGMGR_MOVEMSG
+// TclEventType: FILE_SET_NEW
+// TclEventType: RUN_CURRENT
+// TclEventType: PROJECT_NEW
+// Tcl Message: open_project C:/Users/Andrea/Documents/GitHub/FLOG_BFLOAT16/Philo_Algorithm/Philo_Algorithm.xpr 
+// Tcl Message: INFO: [Project 1-313] Project file moved from 'C:/Users/Andrea/Desktop/Vivado/FLOG/Philo_Algorithm' since last save. 
+// Tcl Message: Scanning sources... Finished scanning sources 
+// Tcl Message: INFO: [IP_Flow 19-234] Refreshing IP repositories INFO: [IP_Flow 19-1704] No user IP repositories specified 
+// HMemoryUtils.trashcanNow. Engine heap size: 502 MB. GUI used memory: 45 MB. Current time: 3/16/20 2:16:52 PM CET
+// Tcl Message: INFO: [IP_Flow 19-2313] Loaded Vivado IP repository 'C:/Xilinx/Vivado/2018.2/data/ip'. 
+// [Engine Memory]: 502 MB (+1585kb) [00:00:16]
+// TclEventType: PROJECT_NEW
+// [Engine Memory]: 540 MB (+14289kb) [00:00:17]
+// [GUI Memory]: 66 MB (+7722kb) [00:00:18]
+// Project name: Philo_Algorithm; location: C:/Users/Andrea/Documents/GitHub/FLOG_BFLOAT16/Philo_Algorithm; part: xc7k70tfbv676-1
+// [GUI Memory]: 70 MB (+710kb) [00:00:20]
+// Tcl Message: open_project: Time (s): cpu = 00:00:11 ; elapsed = 00:00:07 . Memory (MB): peak = 776.508 ; gain = 54.570 
+// [Engine Memory]: 573 MB (+6077kb) [00:00:21]
+dismissDialog("Open Project"); // bx (ck)
+// TclEventType: DG_ANALYSIS_MSG_RESET
+// TclEventType: DG_GRAPH_GENERATED
+// Tcl Message: update_compile_order -fileset sources_1 
+// PAPropertyPanels.initPanels (top.sv) elapsed time: 0.3s
+// Elapsed time: 12 seconds
+selectTree(PAResourceEtoH.FileSetPanel_FILE_SET_PANEL_TREE, "[root, Design Sources, top (top.sv)]", 1, false); // B (D, ck)
+selectTree(PAResourceEtoH.FileSetPanel_FILE_SET_PANEL_TREE, "[root, Design Sources, top (top.sv)]", 1, false, false, false, false, false, true); // B (D, ck) - Double Click
+maximizeView(PAResourceOtoP.PAViews_BASE_WORKSPACE, "BaseWorkspace"); // O (Q, ck)
+// HMemoryUtils.trashcanNow. Engine heap size: 594 MB. GUI used memory: 39 MB. Current time: 3/16/20 2:17:17 PM CET
+// WARNING: HTimer (ActiveMsgMonitor Process Messages Timer) is taking 219ms to process. Increasing delay to 2000 ms.
+// Elapsed time: 568 seconds
+selectCodeEditor("top.sv", 265, 195); // ce (w, ck)
+selectButton(RDIResourceCommand.RDICommands_SAVE_FILE, (String) null); // B (f, ck)
+// TclEventType: DG_GRAPH_STALE
+// TclEventType: FILE_SET_CHANGE
+// WARNING: HTimer (FileMgr Design Graph Update Timer) is taking 448ms to process. Increasing delay to 3000 ms.
+// TclEventType: DG_ANALYSIS_MSG_RESET
+// TclEventType: DG_GRAPH_GENERATED
+// Elapsed time: 15 seconds
+selectCodeEditor("top.sv", 497, 286); // ce (w, ck)
+selectCodeEditor("top.sv", 697, 279); // ce (w, ck)
+selectButton(RDIResourceCommand.RDICommands_SAVE_FILE, (String) null); // B (f, ck)
+// TclEventType: DG_GRAPH_STALE
+// TclEventType: FILE_SET_CHANGE
