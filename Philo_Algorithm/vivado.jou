@@ -12,3 +12,8 @@
 start_gui
 open_project C:/Users/Andrea/Documents/GitHub/FLOG_BFLOAT16/Philo_Algorithm/Philo_Algorithm.xpr
 update_compile_order -fileset sources_1
+launch_simulation
+source tb_top.tcl
+open_wave_config {C:/Users/Andrea/Documents/GitHub/FLOG_BFLOAT16/Philo_Algorithm/tb_top_behav.wcfg}
+relaunch_sim
+close_sim
