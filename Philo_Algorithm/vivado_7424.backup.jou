@@ -1,0 +1,50 @@
+#-----------------------------------------------------------
+# Vivado v2018.2 (64-bit)
+# SW Build 2258646 on Thu Jun 14 20:03:12 MDT 2018
+# IP Build 2256618 on Thu Jun 14 22:10:49 MDT 2018
+# Start of session at: Mon Mar 16 10:22:08 2020
+# Process ID: 7424
+# Current directory: C:/Users/Andrea/Desktop/Vivado/FLOG/Philo_Algorithm
+# Command line: vivado.exe -gui_launcher_event rodinguilauncherevent15172 C:\Users\Andrea\Desktop\Vivado\FLOG\Philo_Algorithm\Philo_Algorithm.xpr
+# Log file: C:/Users/Andrea/Desktop/Vivado/FLOG/Philo_Algorithm/vivado.log
+# Journal file: C:/Users/Andrea/Desktop/Vivado/FLOG/Philo_Algorithm\vivado.jou
+#-----------------------------------------------------------
+start_gui
+open_project C:/Users/Andrea/Desktop/Vivado/FLOG/Philo_Algorithm/Philo_Algorithm.xpr
+update_compile_order -fileset sources_1
+file mkdir C:/Users/Andrea/Desktop/Vivado/FLOG/Philo_Algorithm/Philo_Algorithm.srcs/sim_1/new
+set_property SOURCE_SET sources_1 [get_filesets sim_1]
+close [ open C:/Users/Andrea/Desktop/Vivado/FLOG/Philo_Algorithm/Philo_Algorithm.srcs/sim_1/new/tb_top.sv w ]
+add_files -fileset sim_1 C:/Users/Andrea/Desktop/Vivado/FLOG/Philo_Algorithm/Philo_Algorithm.srcs/sim_1/new/tb_top.sv
+update_compile_order -fileset sim_1
+# Disabling source management mode.  This is to allow the top design properties to be set without GUI intervention.
+set_property source_mgmt_mode None [current_project]
+set_property top tb_top [get_filesets sim_1]
+set_property top_lib xil_defaultlib [get_filesets sim_1]
+# Re-enabling previously disabled source management mode.
+set_property source_mgmt_mode All [current_project]
+update_compile_order -fileset sim_1
+launch_simulation
+source tb_top.tcl
+close_sim
+launch_simulation
+launch_simulation
+source tb_top.tcl
+relaunch_sim
+relaunch_sim
+relaunch_sim
+relaunch_sim
+relaunch_sim
+relaunch_sim
+relaunch_sim
+relaunch_sim
+relaunch_sim
+save_wave_config {C:/Users/Andrea/Desktop/Vivado/FLOG/Philo_Algorithm/tb_top_behav.wcfg}
+save_wave_config {C:/Users/Andrea/Desktop/Vivado/FLOG/Philo_Algorithm/tb_top_behav.wcfg}
+save_wave_config {C:/Users/Andrea/Desktop/Vivado/FLOG/Philo_Algorithm/tb_top_behav.wcfg}
+save_wave_config {C:/Users/Andrea/Desktop/Vivado/FLOG/Philo_Algorithm/tb_top_behav.wcfg}
+save_wave_config {C:/Users/Andrea/Desktop/Vivado/FLOG/Philo_Algorithm/tb_top_behav.wcfg}
+save_wave_config {C:/Users/Andrea/Desktop/Vivado/FLOG/Philo_Algorithm/tb_top_behav.wcfg}
+save_wave_config {C:/Users/Andrea/Desktop/Vivado/FLOG/Philo_Algorithm/tb_top_behav.wcfg}
+save_wave_config {C:/Users/Andrea/Desktop/Vivado/FLOG/Philo_Algorithm/tb_top_behav.wcfg}
+close_sim
