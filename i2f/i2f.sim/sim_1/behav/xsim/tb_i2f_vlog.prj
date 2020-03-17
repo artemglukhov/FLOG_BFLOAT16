@@ -1,0 +1,10 @@
+# compile verilog/system verilog design source files
+sv xil_defaultlib  \
+"../../../../i2f.srcs/sources_1/new/i2f.sv" \
+"../../../../i2f.srcs/sim_1/new/tb_i2f.sv" \
+
+# compile glbl module
+verilog xil_defaultlib "glbl.v"
+
+# Do not sort compile order
+nosort
