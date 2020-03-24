@@ -1,7 +1,0 @@
-Running: xsim.dir/tb_i2f_behav/xsimk.exe -simmode gui -wdb tb_i2f_behav.wdb -simrunnum 0 -socket 50687
-Design successfully loaded
-Design Loading Memory Usage: 5152 KB (Peak: 5152 KB)
-Design Loading CPU Usage: 46 ms
-Simulation completed
-Simulation Memory Usage: 5820 KB (Peak: 5820 KB)
-Simulation CPU Usage: 77 ms
