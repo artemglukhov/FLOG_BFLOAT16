@@ -26,7 +26,7 @@ module i2f(
     
     //inputs
     
-    valid_i,
+    valid_i2f_i,
     parte_intera,
     parte_frazionaria,
     
@@ -34,21 +34,21 @@ module i2f(
     mantissa_o,
     exp_o,
     sgn_o,
-    valid_o
+    valid_i2f_o
     );
 
     import flog_pkg::*;
 
     input                               clk;
     input                               rst;
-    input                               valid_i;
+    input                               valid_i2f_i;
     input  logic  [EXP_WIDTH-1 : 0]     parte_intera;
     input  logic  [MAN_WIDTH-1 : 0]     parte_frazionaria;
 
     output logic [MAN_WIDTH-1 : 0]      mantissa_o;
     output logic [EXP_WIDTH-1 : 0]      exp_o;
     output logic                        sgn_o; 
-    output logic                        valid_o;
+    output logic                        valid_i2f_o;
 
     logic        [DIM-1 : 0]            num_finale, num_finale_next;          //qui con dim = 21 era dim
     logic        [6   : 0]              i, i_next;
@@ -70,7 +70,7 @@ module i2f(
                 j           <= MAN_WIDTH+1;           //sarebbe la posizione del LSB della mantissa nel vettore num_finale
                 mantissa_o  <= '0;
                 exp_o       <= '0;
-                valid_o     <=  0;
+                valid_i2f_o <=  0;
             end
             else
             begin
@@ -94,8 +94,8 @@ module i2f(
             case(ss)
                 IDLE: 
                 begin
-                    valid_o = 0;
-                    if (valid_i)
+                    valid_i2f_o = 0;
+                    if (valid_i2f_i)
                     begin
                         i_next = DIM-1;                     //questo con dim = 21 era dim            
                         if (~parte_intera[7])
@@ -142,7 +142,7 @@ module i2f(
                     begin
                         j_next  = 8;
                         ss_next = IDLE;
-                        valid_o = 1;                 
+                        valid_i2f_o = 1;                 
                     end
                 end    
             endcase        

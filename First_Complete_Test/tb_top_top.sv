@@ -19,7 +19,7 @@ module tb_top_top;
     logic			            sign;
     logic   [EXP_WIDTH-1:0]     exponent;
     logic	[MAN_WIDTH-1:0]		fractional;
-    logic                       input_valid;
+    logic                       valid_i;
 
     //	outputs
     logic				    	s_res_o;
@@ -45,7 +45,7 @@ module tb_top_top;
             .sign           (sign),
             .exponent       (exponent),
             .fractional     (fractional),
-            .input_valid    (input_valid),
+            .valid_i        (valid_i),
             .s_res_o        (s_res_o),
             .e_res_o        (e_res_o),
             .f_res_o        (f_res_o),
@@ -56,9 +56,9 @@ module tb_top_top;
     begin
         clk         <= 1;
         rst          = 1;
-        input_valid  = 0;
+        valid_i      = 0;
 
-        //in_valid = 0;
+        //valid_i = 0;
         //initial_value = 16'b1000_0000_0000_0000;    
         //fd = $fopen("C:/Xilinx/ZONI_FLOG/prova_tb/results.txt", "w");
         
@@ -76,7 +76,7 @@ module tb_top_top;
 
         repeat(2) @(posedge clk);
         rst         <= 0;
-        input_valid  = 1;
+        valid_i      = 1;
 
         wait(valid_o);
 

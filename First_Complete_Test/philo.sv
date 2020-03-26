@@ -7,21 +7,21 @@ module philo(
     // inputs
 
     initial_value,         //mantissa -> 1.M     10101010 (da vedere come fixed point cioe' 1.0101010)
-    in_valid,
+    valid_philo_i,
 
     //outputs
 
     output_value,          //log2(man) -> (0).b7b6b5b4.. lo zero non e' dato dall'algoritmo, e' sottointeso (dovremo concatenarlo? servira'?)   
-    out_valid
+    valid_philo_o
     );
                            
     import flog_pkg::*;
 
     input                                       clk;
     input                                       rst;
-    input                                       in_valid;
+    input                                       valid_philo_i;
     input   logic   [(MAN_WIDTH_PHILO-1):0]     initial_value;      //fixed point (GIA ESTESO con 0 come LSBs) value between 1 and 2, 8 bit
-    output  logic                               out_valid;
+    output  logic                               valid_philo_o;
     output  logic   [(OUT_WIDTH_PHILO-1):0]     output_value;       
     
     logic           [(2*MAN_WIDTH_PHILO-1):0]   PowM, PowM_next;     //pow 32 bit (16+16)
@@ -49,7 +49,7 @@ module philo(
             man             <= '0;
             PowM            <= '0;
             out             <= '0;
-            out_valid       <=  0;
+            valid_philo_o   <=  0;
         end
         else
         begin
@@ -73,15 +73,15 @@ module philo(
         case(ss)
             IDLE:                                                       //IDLE                                                   
             begin
-                out_valid           = 0;
+                valid_philo_o       = 0;
 
-                if(in_valid)
+                if(valid_philo_i)
                 begin
                     ss_next         = EVAL;
                     count_next      = (OUT_WIDTH_PHILO-1);          
                     man_next        = initial_value;
                     PowM_next       = initial_value*initial_value;
-                    out_valid       = 0;
+                    valid_philo_o   = 0;
                     out_next        = '0;
                 end
             end                                                         //end IDLE
@@ -111,8 +111,8 @@ module philo(
             end                                                         //end EVAL
             DONE:                                                       //DONE
             begin
-                out_valid   = 1;
-                ss_next     = IDLE;
+                valid_philo_o   = 1;
+                ss_next         = IDLE;
                 //servira'  un DONE? per cosa potremmo usarlo?
                 //ss_next = IDLE;
                 //si potrebbe aggiungere un valid in uscita che va a 1

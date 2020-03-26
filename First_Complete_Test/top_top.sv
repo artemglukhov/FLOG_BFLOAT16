@@ -10,7 +10,7 @@ module top_top(
 	sign,        
     exponent,        
     fractional,        
-    input_valid,
+    valid_i,
 	
 	//	outputs
 	s_res_o,           
@@ -28,7 +28,7 @@ module top_top(
     input			                        sign;
     input			[EXP_WIDTH-1:0]         exponent;
     input			[MAN_WIDTH-1:0]		    fractional;
-    input                                   input_valid;
+    input                                   valid_i;
 
     //	outputs
     output	logic					        s_res_o;
@@ -38,20 +38,20 @@ module top_top(
 
     
     logic           [MAN_WIDTH_PHILO-1:0]   initial_value;
-    logic                                   start_philo;
+    logic                                   valid_philo_i;
     logic           [OUT_WIDTH_PHILO-1:0]   output_philo;
-    logic                                   o_valid_philo;
+    logic                                   valid_philo_o;
 
     logic           [MAN_WIDTH_PHILO-1:0]   initial_value_next;
-    logic                                   start_philo_next;
+    logic                                   valid_philo_i_next;     
 
     logic           [EXP_WIDTH-1:0]         exp_biased;
     logic           [EXP_WIDTH-1:0]         exp_biased_next;
 
-    logic                                   valid_i_i2f;
+    logic                                   valid_i2f_i;
     logic           [EXP_WIDTH-1 : 0]       parte_intera;
     logic           [MAN_WIDTH-1 : 0]       parte_frazionaria;
-    logic                                   valid_o_i2f;
+    logic                                   valid_i2f_o;
 
     typedef enum logic [1:0]                //stati per la FSM
     {
@@ -71,10 +71,10 @@ module top_top(
         .rst            (rst),
         //inputs
         .initial_value  (initial_value),                                                      //mantissa -> 1.M     10101010 (da vedere come fixed point cioe' 1.0101010)
-        .in_valid       (start_philo),
+        .valid_philo_i  (valid_philo_i),
         //outputs
         .output_value   (output_philo),                                                     //log2(man) -> (0).b7b6b5b4.. lo zero non Ã¨ dato dall'algoritmo, e' sottointeso (dovremo concatenarlo? servira'?)   
-        .out_valid      (o_valid_philo)
+        .valid_philo_o  (valid_philo_o)
     );
 
     /*
@@ -83,13 +83,13 @@ module top_top(
      i2f my_i2f(
          .clk               (clk),
          .rst               (rst),
-         .valid_i           (valid_i_i2f),
+         .valid_i2f_i       (valid_i2f_i),
          .parte_intera      (parte_intera),
          .parte_frazionaria (parte_frazionaria),
          .mantissa_o        (f_res_o),
          .exp_o             (e_res_o),
          .sgn_o             (s_res_o),
-         .valid_o           (valid_o_i2f)
+         .valid_i2f_o       (valid_i2f_o)
      );
 
 /*-------- SEQUENTIAL LOGIC --------*/
@@ -97,7 +97,7 @@ module top_top(
     begin
         if(rst)begin
             initial_value   <=  0;
-            start_philo     <=  0;
+            valid_philo_i   <=  0;
             //s_res_o         <=  0;           
             //e_res_o         <=  0;
             //f_res_o         <=  0;
@@ -109,7 +109,7 @@ module top_top(
         begin
             ss              <=  ss_next;
             initial_value   <=  initial_value_next;
-            start_philo     <=  start_philo_next;
+            valid_philo_i   <=  valid_philo_i_next;
             exp_biased      <=  exp_biased_next;
         end
     end
@@ -119,7 +119,7 @@ module top_top(
     begin
         ss_next             = ss;
         initial_value_next  = initial_value;
-        start_philo_next    = start_philo;
+        valid_philo_i_next  = valid_philo_i;
         exp_biased_next     = exp_biased;
 
         case(ss)
@@ -128,17 +128,17 @@ module top_top(
                 valid_o                 = 0;
                 exp_biased_next         = exponent - BIAS;                  // biases the exponent (CPL2 notation)
                 initial_value_next      = (1 << 15) | (fractional << 8);    
-                if(input_valid == 1) 
+                if(valid_i == 1) 
                 begin
-                    start_philo_next    = 1;
+                    valid_philo_i_next  = 1;
                     ss_next             = WAIT_PHILO;
                 end
             end
             WAIT_PHILO:
             begin
-                if(o_valid_philo == 1) 
+                if(valid_philo_o == 1) 
                 begin
-                    start_philo_next    = 0;
+                    valid_philo_i_next    = 0;
                     ss_next             = WAIT_I2F;
                 end
             end
@@ -147,15 +147,15 @@ module top_top(
                 parte_frazionaria   = output_philo[OUT_WIDTH_PHILO-1:OUT_WIDTH_PHILO-7];
                 parte_intera        = exp_biased;
                 //s_res_o           = sign;
-                valid_i_i2f         = 1;
-                if(valid_o_i2f)
+                valid_i2f_i         = 1;
+                if(valid_i2f_o)
                 begin
                     ss_next         = OUT_RES;
                 end
             end
             OUT_RES:
             begin
-                    valid_i_i2f = 0;
+                    valid_i2f_i = 0;
                     valid_o     = 1;
                     ss_next     = START;
             end
