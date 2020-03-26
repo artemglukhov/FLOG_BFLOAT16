@@ -2,16 +2,17 @@ package flog_pkg;
 
     //per importarlo inserire nel file sotto la dichiarazione del modulo 'import flog_pkg::*'
 
+    parameter S_WIDTH           = 1;                                        //sign width
     parameter MAN_WIDTH         = 7;                                        //nominal width of the mantissa
     parameter EXP_WIDTH         = 8;                                        //nominal width of the exponent
 
     parameter MAN_WIDTH_PHILO   = 16;                                       //width of the mantissa for philo algorithm
     parameter OUT_WIDTH_PHILO   = 7;                                        //width for the output vector of the philo algorithm
-    parameter N_IT_PHILO        = ($clog2(OUT_WIDTH)-1)                     //number of iterations in philo algorithm
+    parameter N_IT_PHILO        = ($clog2(OUT_WIDTH_PHILO)-1);              //number of iterations in philo algorithm
 
-    parameter BIAS              = 127;                                      //exponent bias
+    parameter BIAS              = 127;                                      //(1<<7)-1                                      //exponent bias
 
-    parameter DIM               = 21;                                       //?? definizione??
+    parameter DIM               = 22;                                       //?? definizione??
     parameter COMMA_POS         = 14;                                       //comma position
 
     /*          SPECIAL CASES

@@ -19,50 +19,46 @@ module top_top(
     valid_o
     );
 
-    parameter                       MAN         = 7; 
-    parameter                       EXP         = 8; 
-    parameter                       MAN_WIDTH   = 16;
-    parameter                       OUT_WIDTH   = 7; 
-    parameter                       BIAS        = 127; //(1<<7)-1
+    import flog_pkg::*;
 
-    input						    clk;
-    input							rst;
+    input						            clk;
+    input							        rst;
     
     //	inputs
-    input			                sign;
-    input			[EXP-1:0]       exponent;
-    input			[MAN-1:0]		fractional;
-    input                           input_valid;
+    input			                        sign;
+    input			[EXP_WIDTH-1:0]         exponent;
+    input			[MAN_WIDTH-1:0]		    fractional;
+    input                                   input_valid;
 
     //	outputs
-    output	logic					s_res_o;
-    output	logic	[EXP-1:0]		e_res_o;
-    output	logic	[MAN-1:0]       f_res_o;
-    output	logic					valid_o;
+    output	logic					        s_res_o;
+    output	logic	[EXP_WIDTH-1:0]		    e_res_o;
+    output	logic	[MAN_WIDTH-1:0]         f_res_o;
+    output	logic					        valid_o;
 
     
-    logic   [MAN_WIDTH-1:0]         initial_value;
-    logic                           start_philo;
-    logic   [OUT_WIDTH-1:0]         output_philo;
-    logic                           o_valid_philo;
+    logic           [MAN_WIDTH_PHILO-1:0]   initial_value;
+    logic                                   start_philo;
+    logic           [OUT_WIDTH_PHILO-1:0]   output_philo;
+    logic                                   o_valid_philo;
 
-    logic   [MAN_WIDTH-1:0]         initial_value_next;
-    logic                           start_philo_next;
+    logic           [MAN_WIDTH_PHILO-1:0]   initial_value_next;
+    logic                                   start_philo_next;
 
-    logic   [EXP-1:0]               exp_biased;
-    logic   [EXP-1:0]               exp_biased_next;
+    logic           [EXP_WIDTH-1:0]         exp_biased;
+    logic           [EXP_WIDTH-1:0]         exp_biased_next;
 
-    logic                           valid_i_i2f;
-    logic  [EXP-1 : 0]              parte_intera;
-    logic  [MAN-1 : 0]              parte_frazionaria;
-    logic                           valid_o_i2f;
+    logic                                   valid_i_i2f;
+    logic           [EXP_WIDTH-1 : 0]       parte_intera;
+    logic           [MAN_WIDTH-1 : 0]       parte_frazionaria;
+    logic                                   valid_o_i2f;
 
-    typedef enum logic [1:0]            //stati per la FSM
+    typedef enum logic [1:0]                //stati per la FSM
     {
-        START         = 'd0,      //start flog
-        WAIT_PHILO    = 'd1,      //wait for the result of philo
+        START         = 'd0,                //start flog
+        WAIT_PHILO    = 'd1,                //wait for the result of philo
         WAIT_I2F      = 'd2,
-        OUT_RES       = 'd3       //output the result, sum and done
+        OUT_RES       = 'd3                 //output the result, sum and done
     }ss_top;
 
     ss_top    ss, ss_next;
@@ -129,9 +125,9 @@ module top_top(
         case(ss)
             START:
             begin
-                valid_o             = 0;
-                exp_biased_next     = exponent - BIAS;          // biases the exponent (CPL2 notation)
-                initial_value_next  = (1 << 15) | (fractional << 8);    
+                valid_o                 = 0;
+                exp_biased_next         = exponent - BIAS;                  // biases the exponent (CPL2 notation)
+                initial_value_next      = (1 << 15) | (fractional << 8);    
                 if(input_valid == 1) 
                 begin
                     start_philo_next    = 1;
@@ -148,13 +144,13 @@ module top_top(
             end
             WAIT_I2F:
             begin
-                parte_frazionaria = output_philo[OUT_WIDTH-1:OUT_WIDTH-7];
-                parte_intera      = exp_biased;
+                parte_frazionaria   = output_philo[OUT_WIDTH_PHILO-1:OUT_WIDTH_PHILO-7];
+                parte_intera        = exp_biased;
                 //s_res_o           = sign;
-                valid_i_i2f       = 1;
+                valid_i_i2f         = 1;
                 if(valid_o_i2f)
                 begin
-                    ss_next           = OUT_RES;
+                    ss_next         = OUT_RES;
                 end
             end
             OUT_RES:

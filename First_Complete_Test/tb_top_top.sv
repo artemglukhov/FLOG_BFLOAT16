@@ -7,25 +7,24 @@ module tb_top_top;
     /*importa funzioni DPI-C*/
     //import "DPI-C" function int unsigned DPI_C_log2(int unsigned op);
 
-    parameter HALF_CLK_PERIOD_NS= 20;
-    parameter WAIT_CYCLE        = 20;
-    parameter MAN_WIDTH         = 16;
-    parameter OUT_WIDTH         = 7;
-    parameter MAN               = 7; 
-    parameter EXP               = 8; 
+    import flog_pkg::*;
+
+    parameter HALF_CLK_PERIOD_NS = 20;
+//  parameter WAIT_CYCLE        = 20;       //inutilizzato al momento
+
 
     logic                       clk;
     logic                       rst;
 
     logic			            sign;
-    logic   [EXP-1:0]          	exponent;
-    logic	[MAN-1:0]		    fractional;
+    logic   [EXP_WIDTH-1:0]     exponent;
+    logic	[MAN_WIDTH-1:0]		fractional;
     logic                       input_valid;
 
     //	outputs
     logic				    	s_res_o;
-    logic	[EXP-1:0]		    e_res_o;
-    logic	[MAN-1:0]       	f_res_o;
+    logic	[EXP_WIDTH-1:0]		e_res_o;
+    logic	[MAN_WIDTH-1:0]     f_res_o;
     logic						valid_o;
 
 
@@ -55,9 +54,9 @@ module tb_top_top;
 
     initial
     begin
-        clk <= 1;
-        rst  = 1;
-        input_valid = 0;
+        clk         <= 1;
+        rst          = 1;
+        input_valid  = 0;
 
         //in_valid = 0;
         //initial_value = 16'b1000_0000_0000_0000;    
@@ -76,8 +75,8 @@ module tb_top_top;
         //----------------------------------------------   
 
         repeat(2) @(posedge clk);
-        rst <= 0;
-        input_valid = 1;
+        rst         <= 0;
+        input_valid  = 1;
 
         wait(valid_o);
 
