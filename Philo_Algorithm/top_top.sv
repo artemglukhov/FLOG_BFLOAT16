@@ -50,6 +50,15 @@ module top_top(
 
     logic   [EXP-1:0]               exp_biased;
     logic   [EXP-1:0]               exp_biased_next;
+
+    logic                           valid_i_i2f;
+    logic  [EXP-1 : 0]              parte_intera;
+    logic  [MAN-1 : 0]              parte_frazionaria;
+    logic  [MAN-1 : 0]              mantissa_o_i2f;
+    logic  [EXP-1 : 0]              exp_o_i2f;
+    logic                           sgn_o_i2f;
+    logic                           valid_o_i2f;
+
     
 
     typedef enum logic [1:0]            //stati per la FSM
@@ -74,6 +83,21 @@ module top_top(
         .output_value   (output_philo),                                                     //log2(man) -> (0).b7b6b5b4.. lo zero non Ã¨ dato dall'algoritmo, e' sottointeso (dovremo concatenarlo? servira'?)   
         .out_valid      (o_valid_philo)
     );
+
+    /*
+     *      Instantiation of philo algorithm
+     */
+     i2f my_i2f(
+         .clk               (clk),
+         .rst               (rst),
+         .valid_i           (valid_i_i2f),
+         .parte_intera      (parte_intera),
+         .parte_frazionaria (parte_frazionaria),
+         .mantissa_o        (mantissa_o_i2f),
+         .exp_o             (exp_o_i2f),
+         .sgn_o             (sgn_o_i2f),
+         .valid_o           (valid_o_i2f)
+     );
 
 /*-------- SEQUENTIAL LOGIC --------*/
     always@(posedge clk)
@@ -109,7 +133,7 @@ module top_top(
             START:
             begin
                 valid_o             = 0;
-                exp_biased_next     = exponent - BIAS;          // biases the exponent
+                exp_biased_next     = exponent - BIAS;          // biases the exponent (CPL2 notation)
                 initial_value_next  = (1 << 15) | (fractional << 8);    
                 if(input_valid == 1) 
                 begin
@@ -130,7 +154,7 @@ module top_top(
                 valid_o = 1;
                 f_res_o = output_philo[OUT_WIDTH-1:OUT_WIDTH-7];
                 e_res_o = exponent;
-                s_res_o = sign;
+                s_res_o = sign;                                     //s_res_o andra' collegato all'output dell'I2F 
                 ss_next = START;
             end
         endcase

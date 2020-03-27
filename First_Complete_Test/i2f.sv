@@ -31,7 +31,7 @@ module i2f(
     parte_frazionaria,
     
     //outputs
-    mantissa_o,
+    fract_o,
     exp_o,
     sgn_o,
     valid_i2f_o
@@ -43,9 +43,9 @@ module i2f(
     input                               rst;
     input                               valid_i2f_i;
     input  logic  [EXP_WIDTH-1 : 0]     parte_intera;
-    input  logic  [FRACT_WIDTH-1 : 0]     parte_frazionaria;
+    input  logic  [FRACT_WIDTH-1 : 0]   parte_frazionaria;
 
-    output logic [FRACT_WIDTH-1 : 0]      mantissa_o;
+    output logic [FRACT_WIDTH-1 : 0]    fract_o;
     output logic [EXP_WIDTH-1 : 0]      exp_o;
     output logic                        sgn_o; 
     output logic                        valid_i2f_o;
@@ -56,7 +56,7 @@ module i2f(
     logic        [3   : 0]              ss, ss_next;
     logic                               sgn, sgn_next;
 
-    localparam IDLE = 2'b00, WORK =2'b01, EXP_CALC = 2'b10, MANT_CALC = 2'b11;
+    localparam IDLE = 2'b00, WORK =2'b01, EXP_CALC = 2'b10, FRACT_CALC = 2'b11;
 
     always@(posedge clk, posedge rst)
         begin
@@ -68,7 +68,7 @@ module i2f(
                 num_finale  <= '0;
                 sgn         <= 0;
                 j           <= FRACT_WIDTH+1;           //sarebbe la posizione del LSB della mantissa nel vettore num_finale
-                mantissa_o  <= '0;
+                fract_o     <= '0;
                 exp_o       <= '0;
                 valid_i2f_o <=  0;
             end
@@ -129,13 +129,13 @@ module i2f(
                 begin
                     exp_o   = i - COMMA_POS + 127; //- polarizzazione 
                     sgn_o   = sgn;
-                    ss_next = MANT_CALC; 
+                    ss_next = FRACT_CALC; 
                 end                      
-                MANT_CALC: 
+                FRACT_CALC: 
                 begin
                     if(j >= 1)
                     begin
-                        mantissa_o[j-1] = num_finale[i-1-7 +j];     
+                        fract_o[j-1] = num_finale[i-1-7 +j];     
                         j_next          = j-1;
                     end
                     else

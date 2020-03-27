@@ -3,10 +3,10 @@ package flog_pkg;
     //per importarlo inserire nel file sotto la dichiarazione del modulo 'import flog_pkg::*'
 
     parameter S_WIDTH           = 1;                                        //sign width
-    parameter FRACT_WIDTH         = 7;                                      //nominal width of the mantissa
+    parameter FRACT_WIDTH       = 7;                                      //nominal width of the mantissa
     parameter EXP_WIDTH         = 8;                                        //nominal width of the exponent
 
-    parameter FRACT_WIDTH_PHILO   = 16;                                     //width of the mantissa for philo algorithm
+    parameter FRACT_WIDTH_PHILO = 16;                                     //width of the mantissa for philo algorithm
     parameter OUT_WIDTH_PHILO   = 7;                                        //width for the output vector of the philo algorithm
     parameter N_IT_PHILO        = ($clog2(OUT_WIDTH_PHILO)-1);              //number of iterations in philo algorithm
 
