@@ -43,9 +43,9 @@ module i2f(
     input                               rst;
     input                               valid_i2f_i;
     input  logic  [EXP_WIDTH-1 : 0]     parte_intera;
-    input  logic  [MAN_WIDTH-1 : 0]     parte_frazionaria;
+    input  logic  [FRACT_WIDTH-1 : 0]     parte_frazionaria;
 
-    output logic [MAN_WIDTH-1 : 0]      mantissa_o;
+    output logic [FRACT_WIDTH-1 : 0]      mantissa_o;
     output logic [EXP_WIDTH-1 : 0]      exp_o;
     output logic                        sgn_o; 
     output logic                        valid_i2f_o;
@@ -67,7 +67,7 @@ module i2f(
                 ss          <= IDLE;     
                 num_finale  <= '0;
                 sgn         <= 0;
-                j           <= MAN_WIDTH+1;           //sarebbe la posizione del LSB della mantissa nel vettore num_finale
+                j           <= FRACT_WIDTH+1;           //sarebbe la posizione del LSB della mantissa nel vettore num_finale
                 mantissa_o  <= '0;
                 exp_o       <= '0;
                 valid_i2f_o <=  0;

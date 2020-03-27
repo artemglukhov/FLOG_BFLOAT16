@@ -18,13 +18,13 @@ module tb_top_top;
 
     logic			            sign;
     logic   [EXP_WIDTH-1:0]     exponent;
-    logic	[MAN_WIDTH-1:0]		fractional;
+    logic	[FRACT_WIDTH-1:0]		fractional;
     logic                       valid_i;
 
     //	outputs
     logic				    	s_res_o;
     logic	[EXP_WIDTH-1:0]		e_res_o;
-    logic	[MAN_WIDTH-1:0]     f_res_o;
+    logic	[FRACT_WIDTH-1:0]     f_res_o;
     logic						valid_o;
 
 

@@ -20,12 +20,12 @@ module philo(
     input                                       clk;
     input                                       rst;
     input                                       valid_philo_i;
-    input   logic   [(MAN_WIDTH_PHILO-1):0]     initial_value;      //fixed point (GIA ESTESO con 0 come LSBs) value between 1 and 2, 8 bit
+    input   logic   [(FRACT_WIDTH_PHILO-1):0]     initial_value;      //fixed point (GIA ESTESO con 0 come LSBs) value between 1 and 2, 8 bit
     output  logic                               valid_philo_o;
     output  logic   [(OUT_WIDTH_PHILO-1):0]     output_value;       
     
-    logic           [(2*MAN_WIDTH_PHILO-1):0]   PowM, PowM_next;     //pow 32 bit (16+16)
-    logic           [(MAN_WIDTH_PHILO-1):0]     man, man_next;
+    logic           [(2*FRACT_WIDTH_PHILO-1):0]   PowM, PowM_next;     //pow 32 bit (16+16)
+    logic           [(FRACT_WIDTH_PHILO-1):0]     man, man_next;
     logic           [(OUT_WIDTH_PHILO-1):0]     out, out_next;
     logic           [N_IT_PHILO:0]              count, count_next;   //a ogni iterazione riempio un bit di out quindi count deve essere parametrizzato a OUT_WIDTH_PHILO
 
@@ -87,17 +87,17 @@ module philo(
             end                                                         //end IDLE
             EVAL:                                                       //EVAL
             begin
-                if(PowM[(2*MAN_WIDTH_PHILO-1)])
+                if(PowM[(2*FRACT_WIDTH_PHILO-1)])
                 begin
                     out_next[count] = 1;                                //pow >=2 quindi il bit e' 1
-                    man_next        = PowM[(2*MAN_WIDTH_PHILO-1):16];           //il prossimo operand e' la potenza diviso due (quindi prendo i 16 MSB di pow)     
-                    PowM_next       = PowM[(2*MAN_WIDTH_PHILO-1):16]*PowM[(2*MAN_WIDTH_PHILO-1):16];          //la prossima potenza e' man_next*man_next 
+                    man_next        = PowM[(2*FRACT_WIDTH_PHILO-1):16];           //il prossimo operand e' la potenza diviso due (quindi prendo i 16 MSB di pow)     
+                    PowM_next       = PowM[(2*FRACT_WIDTH_PHILO-1):16]*PowM[(2*FRACT_WIDTH_PHILO-1):16];          //la prossima potenza e' man_next*man_next 
                 end
                 else
                 begin
                     out_next[count] = 0;                                //pow <2 quindi il bit e' 0
-                    man_next        = PowM[(2*MAN_WIDTH_PHILO-2):15];                                   //il prossimo operand e' la potenza stessa (quindi prendo i 16 bit dopo l'MSB che sara' 0 essendo <2)
-                    PowM_next       = PowM[(2*MAN_WIDTH_PHILO-2):15]*PowM[(2*MAN_WIDTH_PHILO-2):15];          //la prossima potenza e' man_next * man_next
+                    man_next        = PowM[(2*FRACT_WIDTH_PHILO-2):15];                                   //il prossimo operand e' la potenza stessa (quindi prendo i 16 bit dopo l'MSB che sara' 0 essendo <2)
+                    PowM_next       = PowM[(2*FRACT_WIDTH_PHILO-2):15]*PowM[(2*FRACT_WIDTH_PHILO-2):15];          //la prossima potenza e' man_next * man_next
                 end
                 if(count == 0)                                          //se count == 0 abbiamo finito le iterazioni
                 begin

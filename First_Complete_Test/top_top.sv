@@ -27,22 +27,22 @@ module top_top(
     //	inputs
     input			                        sign;
     input			[EXP_WIDTH-1:0]         exponent;
-    input			[MAN_WIDTH-1:0]		    fractional;
+    input			[FRACT_WIDTH-1:0]		    fractional;
     input                                   valid_i;
 
     //	outputs
     output	logic					        s_res_o;
     output	logic	[EXP_WIDTH-1:0]		    e_res_o;
-    output	logic	[MAN_WIDTH-1:0]         f_res_o;
+    output	logic	[FRACT_WIDTH-1:0]         f_res_o;
     output	logic					        valid_o;
 
     
-    logic           [MAN_WIDTH_PHILO-1:0]   initial_value;
+    logic           [FRACT_WIDTH_PHILO-1:0]   initial_value;
     logic                                   valid_philo_i;
     logic           [OUT_WIDTH_PHILO-1:0]   output_philo;
     logic                                   valid_philo_o;
 
-    logic           [MAN_WIDTH_PHILO-1:0]   initial_value_next;
+    logic           [FRACT_WIDTH_PHILO-1:0]   initial_value_next;
     logic                                   valid_philo_i_next;     
 
     logic           [EXP_WIDTH-1:0]         exp_biased;
@@ -50,7 +50,7 @@ module top_top(
 
     logic                                   valid_i2f_i;
     logic           [EXP_WIDTH-1 : 0]       parte_intera;
-    logic           [MAN_WIDTH-1 : 0]       parte_frazionaria;
+    logic           [FRACT_WIDTH-1 : 0]       parte_frazionaria;
     logic                                   valid_i2f_o;
 
     typedef enum logic [1:0]                //stati per la FSM
