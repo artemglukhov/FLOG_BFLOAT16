@@ -5,7 +5,7 @@ module tb_top_top;
 
 
     /*importa funzioni DPI-C*/
-    //import "DPI-C" function int unsigned DPI_C_log2(int unsigned op);
+    import "DPI-C" function int unsigned DPI_C_log2(int unsigned sign, int unsigned exp, int unsigned frac);
 
     import flog_pkg::*;
 
@@ -29,9 +29,11 @@ module tb_top_top;
 
 
 
-    //int fd;
+    int fd;
+    logic   [EXP_WIDTH-1:0]     exp_rand;
+    logic   [FRACT_WIDTH-1:0]   fract_rand;
 
-    //logic	[OUT_WIDTH-1:0]	tb_res;     //for DPI-output
+    logic	[31:0]	tb_res;     //for DPI-output
 
 
     always #HALF_CLK_PERIOD_NS clk = ~clk;
@@ -60,7 +62,7 @@ module tb_top_top;
 
         //valid_i = 0;
         //initial_value = 16'b1000_0000_0000_0000;    
-        //fd = $fopen("C:/Xilinx/ZONI_FLOG/prova_tb/results.txt", "w");
+        fd = $fopen("C:/Xilinx/ZONI_FLOG/prova_totale/results.txt", "w");
         
         //-------- TEST 1 ------------------------------
         //sign        = 0;
@@ -68,10 +70,32 @@ module tb_top_top;
         //fractional  = 7'b111_1010;    //1,953125(in base dieci) -> log2(1,953125) = 0.9657842847 (con la calcolatrice) 
         //----------------------------------------------
 
-        //-------- TEST 2 numero decimale in ingresso = 6,85...+e30  ------------------------------
-        sign        = 0;
-        exponent    = 8'b1110_0101;
-        fractional  = 7'b010_1101;    //1,953125(in base dieci) -> log2(1,953125) = 0.9657842847 (con la calcolatrice) 
+
+        for(int i=0;i < 100; i++)
+        begin
+            //random numbers
+            exp_rand	=	$urandom_range(0, 255);
+			fract_rand	=	$urandom_range(0,127); //(op1_exponent>=0 && op1_exponent<255) ? $random : $urandom_range(0,1)<<22 /*inf or qnan*/;
+            
+            TASK_doFLog('d0, exp_rand, fract_rand);
+        end
+        
+        
+        
+        repeat(2) @(posedge clk);
+        $fclose(fd);
+        
+        $finish;
+  
+    end
+
+    task TASK_doFLog (input logic [S_WIDTH -1 :0]  sign_task, input logic [EXP_WIDTH-1 : 0] exponent_task, input logic [FRACT_WIDTH-1 : 0] fractional_task );
+
+        rst <= 1;
+        // 0, 0x854c
+        sign        = sign_task;
+        exponent    = exponent_task;
+        fractional  = fractional_task;    //1,953125(in base dieci) -> log2(1,953125) = 0.9657842847 (con la calcolatrice) 
         //----------------------------------------------   
 
         repeat(2) @(posedge clk);
@@ -81,13 +105,21 @@ module tb_top_top;
         wait(valid_o);
 
         @(posedge clk);
+        
+        valid_i     = 0;
 
+        tb_res  =   DPI_C_log2(sign_task, exponent_task, fractional_task); 
+        $fdisplay(fd, "input:       %b, %b, %b", sign, exponent, fractional);
+        $fdisplay(fd, "output_RTL:  %b, %b, %b", s_res_o, e_res_o, f_res_o);
+        $fdisplay(fd, "output_DPI:  %b, %b, %b", tb_res[31], tb_res[EXP_WIDTH-1+FRACT_WIDTH+16:FRACT_WIDTH+16], tb_res[FRACT_WIDTH-1+16:16]);
+        //$fdisplay(fd, "operand: %b", operand);
+        //$fdisplay(fd, "RTL-FPU: %b", output_value);
+        //$fdisplay(fd, "DPI-FPU: %b", tb_res);
+        $fdisplay(fd, " ");
 
         repeat(2) @(posedge clk);
 
-        
-        $finish;
-  
-    end
+	endtask
+
 
 endmodule

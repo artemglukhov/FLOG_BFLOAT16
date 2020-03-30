@@ -73,7 +73,7 @@ module top_top(
         .fract_i        (input_philo),                                                      //mantissa -> 1.M     10101010 (da vedere come fixed point cioe' 1.0101010)
         .valid_philo_i  (valid_philo_i),
         //outputs
-        .result_o       (output_philo),                                                     //log2(man) -> (0).b7b6b5b4.. lo zero non Ã¨ dato dall'algoritmo, e' sottointeso (dovremo concatenarlo? servira'?)   
+        .result_o       (output_philo),                                                     //log2(man) -> (0).b7b6b5b4.. lo zero non e' dato dall'algoritmo, e' sottointeso (dovremo concatenarlo? servira'?)   
         .valid_philo_o  (valid_philo_o)
     );
 
