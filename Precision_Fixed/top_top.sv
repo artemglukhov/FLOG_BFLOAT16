@@ -78,7 +78,7 @@ module top_top(
     );
 
     /*
-     *      Instantiation of philo algorithm
+     *      Instantiation of i2f
      */
      i2f my_i2f(
          .clk               (clk),
