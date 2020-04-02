@@ -5,7 +5,7 @@ module tb_top_top;
 
 
     /*importa funzioni DPI-C*/
-    import "DPI-C" function int unsigned DPI_C_log2(int unsigned sign, int unsigned exp, int unsigned frac);
+    //import "DPI-C" function int unsigned DPI_C_log2(int unsigned sign, int unsigned exp, int unsigned frac);          //DPI
 
     import flog_pkg::*;
 
@@ -29,11 +29,11 @@ module tb_top_top;
 
 
 
-    int fd;
+    int fd;                                                       //DPI
     logic   [EXP_WIDTH-1:0]     exp_rand;
     logic   [FRACT_WIDTH-1:0]   fract_rand;
 
-    logic	[31:0]	tb_res;     //for DPI-output
+    //logic	[31:0]	tb_res;                                       //for DPI-output
 
 
     always #HALF_CLK_PERIOD_NS clk = ~clk;
@@ -62,7 +62,7 @@ module tb_top_top;
 
         //valid_i = 0;
         //initial_value = 16'b1000_0000_0000_0000;    
-        fd = $fopen("/home/giacomo/Scrivania/FCT/results.txt", "w");
+        fd = $fopen("/home/giacomo/Scrivania/FCT/results.txt", "w");              
         
         //-------- TEST 1 ------------------------------
         //sign        = 0;
@@ -108,10 +108,10 @@ module tb_top_top;
         
         valid_i     = 0;
 
-        tb_res  =   DPI_C_log2(sign_task, exponent_task, fractional_task); 
-        $fdisplay(fd, "input:       %b, %b, %b", sign, exponent, fractional);
-        $fdisplay(fd, "output_RTL:  %b, %b, %b", s_res_o, e_res_o, f_res_o);
-        $fdisplay(fd, "output_DPI:  %b, %b, %b", tb_res[31], tb_res[EXP_WIDTH-1+FRACT_WIDTH+16:FRACT_WIDTH+16], tb_res[FRACT_WIDTH-1+16:16]);
+        //tb_res  =   DPI_C_log2(sign_task, exponent_task, fractional_task);                //DPI
+        $fdisplay(fd, "%b, %b, %b", sign, exponent, fractional);
+        $fdisplay(fd, "%b, %b, %b", s_res_o, e_res_o, f_res_o);
+        //$fdisplay(fd, "output_DPI:  %b, %b, %b", tb_res[31], tb_res[EXP_WIDTH-1+FRACT_WIDTH+16:FRACT_WIDTH+16], tb_res[FRACT_WIDTH-1+16:16]);
         //$fdisplay(fd, "operand: %b", operand);
         //$fdisplay(fd, "RTL-FPU: %b", output_value);
         //$fdisplay(fd, "DPI-FPU: %b", tb_res);
