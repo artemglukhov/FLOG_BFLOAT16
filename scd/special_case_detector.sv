@@ -2,7 +2,7 @@ module special_case_detector (
     //inputs
     s_op_i, exp_op_i, fract_op_i,
     //outputs
-    isInf_o, isPosInf_o, isNegInf_o, isNaN_o, isQNaN_o, isSNaN_o, isZero_o, isPosZero_o, isNegZero_o
+    isInf_o, isPosInf_o, isNegInf_o, isNaN_o, isQNaN_o, isSNaN_o, isZero_o, isPosZero_o, isNegZero_o, isOpValid_o
     //s_res_o, exp_res_o, fract_res_o
 );
 
@@ -25,13 +25,13 @@ module special_case_detector (
     input [EXP_WIDTH-1:0]       exp_op_i;
     input [FRACT_WIDTH-1:0]     fract_op_i;
     
-    output logic                isInf_o, isPosInf_o, isNegInf_o, isNaN_o, isQNaN_o, isSNaN_o, isZero_o, isPosZero_o, isNegZero_o;  
+    output logic                isInf_o, isPosInf_o, isNegInf_o, isNaN_o, isQNaN_o, isSNaN_o, isZero_o, isPosZero_o, isNegZero_o, isOpValid_o;  
 
 
     /*  for future reference 
         (&_op_i) = 1         se tutti i bit sono 1
-        ~(&_op_i) = 1        se almeno un bit Ã¨ a 0
-        (|_op_i) = 1         se almeno un bit Ã¨ a 1
+        ~(&_op_i) = 1        se almeno un bit è a 0
+        (|_op_i) = 1         se almeno un bit è a 1
         ~(|_op_i) = 1        se tutti i bit sono a 0
     */
     
@@ -49,6 +49,8 @@ module special_case_detector (
     
         isPosZero_o = ~(s_op_i) & (isZero_o);
         isNegZero_o = (s_op_i) & (isZero_o);
+        
+        isOpValid_o = ~(isInf_o|isZero_o|isNaN_o);
     end
     
 endmodule

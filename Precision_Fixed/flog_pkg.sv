@@ -15,6 +15,37 @@ package flog_pkg;
     parameter DIM               = 22;                                       //?? definizione??
     parameter COMMA_POS         = 14;                                       //comma position
 
+
+    /*  for future reference 
+        (&_op_i) = 1         se tutti i bit sono 1
+        ~(&_op_i) = 1        se almeno un bit � a 0
+        (|_op_i) = 1         se almeno un bit � a 1
+        ~(|_op_i) = 1        se tutti i bit sono a 0
+    */
+
+    function automatic logic [6-1:0] FUNC_SpecialCaseDetector(input s_op_i, input [EXP_WIDTH-1:0] exp_op_i, input [FRACT_WIDTH-1:0] fract_op_i);
+
+    logic isNeg_o, isPosInf_o, isPosZero_o, isQNaN_o, isSNaN_o, isOpValid_o;
+
+    isNeg_o     = (s_op_i);                                                                     //if s=1 the op is negative
+    isPosInf_o  = ~(s_op_i) & (&exp_op_i) & ~(|fract_op_i);                                     //+inf 0_11111111_0000000   0xff00 
+    isPosZero_o = ~(s_op_i) & ~(|exp_op_i) & ~(|fract_op_i);                                    //+0   0_00000000_0000000   0x0000 
+    isQNaN_o    = (&exp_op_i) & (fract_op_i[FRACT_WIDTH-1]) & ~(|fract_op_i[FRACT_WIDTH-2:0]);  //QNaN 11111111_1000000     0xff40
+    isSNaN_o    = (&exp_op_i) & (~fract_op_i[FRACT_WIDTH-1]) & (&fract_op_i[FRACT_WIDTH-2:0]);  //SNaN 11111111_0111111     0xff7f 
+   
+    isOpValid_o = ~(isNeg_o|isPosInf_o|isPosZero_o|isQNaN_o|isSNaN_o);                          //the operand is valid
+   
+    return {isNeg_o, isPosInf_o, isPosZero_o, isQNaN_o, isSNaN_o,isOpValid_o};
+    endfunction
+
+
+
+
+
+
+
+
+
     /*          SPECIAL CASES
         parameter INF				=	15'h7f80;							//Infinito nello standard IEEE754   11111111_0000000
         parameter ZERO				=	15'h0000;							//Zero nello standard IEEE754       00000000_0000000

@@ -11,7 +11,7 @@ module tb_scd();
     logic s_op_i;
     logic [EXP_WIDTH-1:0]   exp_op_i;
     logic [FRACT_WIDTH-1:0]  fract_op_i;
-    logic isInf_o, isPosInf_o, isNegInf_o, isNaN_o, isQNaN_o, isSNaN_o, isZero_o, isPosZero_o, isNegZero_o;
+    logic isInf_o, isPosInf_o, isNegInf_o, isNaN_o, isQNaN_o, isSNaN_o, isZero_o, isPosZero_o, isNegZero_o, isOpValid_o;
     
     
     
@@ -28,7 +28,8 @@ module tb_scd();
             .isSNaN_o(isSNaN_o),
             .isZero_o(isZero_o),
             .isPosZero_o(isPosZero_o),
-            .isNegZero_o(isNegZero_o)
+            .isNegZero_o(isNegZero_o),
+            .isOpValid_o(isOpValid_o)
         );
         
       initial
@@ -48,7 +49,12 @@ module tb_scd();
 //          isNegZero_o     = 0;
           
         #(DELAY);
+        //valid data
+        s_op_i = 0;
+        exp_op_i = 8'b1001_1111;
+        fract_op_i = 7'b1111_000;
         
+        #(DELAY);
         //+inf 0_11111111_0000000
         s_op_i = 0;
         exp_op_i = 8'b1111_1111;
