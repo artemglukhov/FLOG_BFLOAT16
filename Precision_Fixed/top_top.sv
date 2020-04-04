@@ -66,6 +66,7 @@ module top_top(
     logic                                   isPosZero, isPosZero_next;
     logic                                   isQNaN, isQNaN_next;
     logic                                   isSNaN, isSNaN_next;
+    logic                                   isNaN, isNaN_next;
     logic                                   isOpValid, isOpValid_next;
 
     typedef enum logic [2:0]                //stati per la FSM
@@ -125,6 +126,7 @@ module top_top(
             isPosZero       <=  0;
             isQNaN          <=  0;
             isSNaN          <=  0;
+            isNaN          <=  0;
             isOpValid       <=  0;
         end
         else
@@ -141,6 +143,7 @@ module top_top(
             isPosZero       <=  isPosZero_next;
             isQNaN          <=  isQNaN_next;
             isSNaN          <=  isSNaN_next;
+            isNaN          <=  isNaN_next;
             isOpValid       <=  isOpValid_next;
         end
     end
@@ -160,6 +163,7 @@ module top_top(
         isPosZero_next      = isPosZero;
         isQNaN_next         = isQNaN;
         isSNaN_next         = isSNaN;    
+        isNaN_next         = isNaN;    
         isOpValid_next      = isOpValid;
 
         case(ss)
@@ -170,7 +174,7 @@ module top_top(
                 input_philo_next        = (1 << 15) | (fractional << 8);    
                 if(valid_i == 1) 
                 begin
-                    {isNeg_next, isPosInf_next, isPosZero_next, isQNaN_next, isSNaN_next,isOpValid_next} = FUNC_SpecialCaseDetector(sign, exponent, fractional);
+                    {isNeg_next, isPosInf_next, isPosZero_next, isQNaN_next, isSNaN_next,isNaN_next,isOpValid_next} = FUNC_SpecialCaseDetector(sign, exponent, fractional);
                     ss_next = CHECK_OP;
                     // if(isOpValid_next)
                     //     valid_philo_i_next  = 1;
@@ -207,6 +211,11 @@ module top_top(
                 else if(isSNaN)                                                                     //if op is SNaN             
                 begin
                     {s_res_next, e_res_next, f_res_next} = {1'b0, 8'b1111_1111, 7'b0111_111};       //return SNaN
+                    ss_next = OUT_RES;
+                end
+                else if(isNaN)
+                begin
+                    {s_res_next, e_res_next, f_res_next} = {1'b0, 8'b1111_1111, 7'b1000_000};       //return QNaN
                     ss_next = OUT_RES;
                 end
 

@@ -101,7 +101,7 @@ module i2f(
                 begin
                     // scorro il vettore concatenato fino a che non trovo un 1, 
                     //non devo prendere gli ultimi 6 bit lsb che li ho messi apposta a 0
-                    if (num_finale[i] || i < (EXP_WIDTH-1))    
+                    if (num_finale[i] || i <= (EXP_WIDTH-1))        //warning! it was just '<' but in the case of log(1) it went out of range
                     begin
                         ss_next = EXP_CALC;
                     end
