@@ -62,7 +62,7 @@ module tb_top_top;
 
         //valid_i = 0;
         //initial_value = 16'b1000_0000_0000_0000;    
-        fd = $fopen("C:/Users/Andrea/Documents/GitHub/FLOG_BFLOAT16/Script_Matlab/results_scd.txt", "w");
+        fd = $fopen("C:/Xilinx/ZONI_FLOG/project_scd/results_scd.txt", "w");
         
         //-------- TEST 1 ------------------------------
         //sign        = 0;
@@ -71,22 +71,24 @@ module tb_top_top;
         //---------------------------------------------
         
         
-        //TASK_doFLog(1'b1, 8'b1010_1010, 7'b1010_000);               //op <0
-        TASK_doFLog(1'b0, 8'b1111_1111, 7'b0000_000);               //op +inf
-        TASK_doFLog(1'b0, 8'b0000_0000, 7'b0000_000);               //op 0+
-        TASK_doFLog(1'b0, 8'b1111_1111, 7'b1000_000);               //op QNaN
-        TASK_doFLog(1'b0, 8'b1111_1111, 7'b0111_111);               //op SNaN
+//        TASK_doFLog(1'b1, 8'b1010_1010, 7'b1010_000);               //op <0
+//        TASK_doFLog(1'b0, 8'b1111_1111, 7'b0000_000);               //op +inf
+//        TASK_doFLog(1'b0, 8'b0000_0000, 7'b0000_000);               //op 0+
+//        TASK_doFLog(1'b0, 8'b1111_1111, 7'b1000_000);               //op QNaN
+//        TASK_doFLog(1'b0, 8'b1111_1111, 7'b0111_111);               //op SNaN
+//        TASK_doFLog(1'b0, 8'b1111_1111, 7'b0001_101);               //op NaN generic
         
-        TASK_doFLog(1'b0, 8'b1111_1011, 7'b0101_011);               //op valid
+//        TASK_doFLog(1'b0, 8'b1111_1011, 7'b0101_011);               //op valid
         
         
-         for(int i=0;i < 1000; i++)
-           begin
-               //random numbers
-               exp_rand    =    $urandom_range(0, 255);
-               fract_rand    =    $urandom_range(0,127); //(op1_exponent>=0 && op1_exponent<255) ? $random : $urandom_range(0,1)<<22 /*inf or qnan*/;
-               
-               TASK_doFLog('d0, exp_rand, fract_rand);
+       for(int i=0;i <=255; i++)
+       begin
+            for(int j=0;j<=127; j++)
+            begin
+           //exp_rand    =    $urandom_range(0, 255);
+           //fract_rand    =    $urandom_range(0,127); //(op1_exponent>=0 && op1_exponent<255) ? $random : $urandom_range(0,1)<<22 /*inf or qnan*/;
+                TASK_doFLog('d0, i, j);
+            end
         end
         
         
