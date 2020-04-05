@@ -106,7 +106,7 @@ module i2f(
                 begin
                     // scorro il vettore concatenato fino a che non trovo un 1, 
                     //non devo prendere gli ultimi 6 bit lsb che li ho messi apposta a 0
-                    if (num_finale[i] || i < (EXP_WIDTH-1))    
+                    if (num_finale[i] || i <= (EXP_WIDTH-1))    
                     begin
                         ss_next = EXP_CALC;
                     end
@@ -125,16 +125,19 @@ module i2f(
                 begin
                     if(j >= 1)
                     begin
-                        fract_temp_next[j-1]   = num_finale[i-1-7 +j];       //**
-                        //fract_o[j-1] = num_finale[i-1-7 +j];    
-                        j_next          = j-1;
+                        fract_temp_next[j-1]    = num_finale[i-1-7 +j];       
+                        j_next                  = j-1;
                     end
                     else
-                    begin
-                        if(num_finale[i-1-7])                               //**
-                            fract_o = fract_temp + 1;                       //**
-                        else                                                //**
-                            fract_o = fract_temp;                           //**
+                    begin 
+                        if(num_finale[i-1-7])       //Rounding: incremento di 1 fract se il primo bit a dx e' 1 e, se fract_temp e' tutti 1, aumento di 1 anche l'exp
+                        begin     
+                                fract_o     = fract_temp + 1;                      
+                                if(&(fract_temp))
+                                    exp_o   = i - COMMA_POS + BIAS + 1;
+                        end
+                        else                                                
+                                fract_o = fract_temp;     
                         j_next  = 8;
                         ss_next = IDLE;
                         valid_i2f_o = 1;                 
