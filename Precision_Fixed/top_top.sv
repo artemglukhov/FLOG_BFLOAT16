@@ -1,6 +1,6 @@
 `timescale 1ns / 1ps
 `include "philo.sv"
-`include "i2f.sv"
+`include "i2f_rounding.sv"
 
 module top_top(
     clk, 
@@ -69,7 +69,7 @@ module top_top(
     logic                                   isNaN, isNaN_next;
     logic                                   isOpValid, isOpValid_next;
 
-    typedef enum logic [2:0]                //stati per la FSM
+    typedef enum logic [2:0]                
     {
         START         = 'd0,                //start flog
         CHECK_OP      = 'd1,                //check operand
@@ -87,10 +87,10 @@ module top_top(
         .clk            (clk),
         .rst            (rst),
         //inputs
-        .fract_i        (input_philo),                                                      //mantissa -> 1.M     10101010 (da vedere come fixed point cioe' 1.0101010)
+        .fract_i        (input_philo),                                                      //fractional -> 1.M     10101010 (see it as 1.0101010)
         .valid_philo_i  (valid_philo_i),
         //outputs
-        .result_o       (output_philo),                                                     //log2(man) -> (0).b7b6b5b4.. lo zero non e' dato dall'algoritmo, e' sottointeso (dovremo concatenarlo? servira'?)   
+        .result_o       (output_philo),                                                     //log2(man) -> (0).b7b6b5b4...
         .valid_philo_o  (valid_philo_o)
     );
 
@@ -176,9 +176,6 @@ module top_top(
                 begin
                     {isNeg_next, isPosInf_next, isPosZero_next, isQNaN_next, isSNaN_next,isNaN_next,isOpValid_next} = FUNC_SpecialCaseDetector(sign, exponent, fractional);
                     ss_next = CHECK_OP;
-                    // if(isOpValid_next)
-                    //     valid_philo_i_next  = 1;
-                    //     ss_next             = WAIT_PHILO;
                 end
             end
             CHECK_OP:
@@ -190,7 +187,7 @@ module top_top(
                 end
                 else if(isNeg)                                                                      //if op is <0
                 begin
-                    {s_res_next, e_res_next, f_res_next} = {1'b0, 8'b1111_1111, 7'b1000_000};       //return QNaN (sign = 0, anche se in realta e don't care) (decidere se Q o S)
+                    {s_res_next, e_res_next, f_res_next} = {1'b0, 8'b1111_1111, 7'b1000_000};       //return QNaN (sign = 0, even if it's don't care)
                     ss_next = OUT_RES;
                 end
                 else if(isPosInf)                                                                   //if op is +inf
@@ -232,7 +229,6 @@ module top_top(
             begin
                 log_f_i             =   output_philo;
                 integer_i           =   exp_biased;
-                //s_res_o           = sign;
                 valid_i2f_i         = 1;
                 if(valid_i2f_o)
                 begin

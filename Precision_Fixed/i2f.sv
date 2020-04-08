@@ -21,19 +21,19 @@ module i2f(
     input                               rst;
     input                               valid_i2f_i;
     input  logic [EXP_WIDTH-1 : 0]      integer_i;
-    input  logic [FRACT_WIDTH-1 : 0]    log_f_i;                    //logaritmo della parte frazionaria
+    input  logic [FRACT_WIDTH-1 : 0]    log_f_i;                                
 
     output logic [FRACT_WIDTH-1 : 0]    fract_o;
     output logic [EXP_WIDTH-1 : 0]      exp_o;
     output logic                        sgn_o; 
     output logic                        valid_i2f_o;
 
-    logic        [DIM-1 : 0]            num_finale, num_finale_next;          //qui con dim = 21 era dim
+    logic        [DIM-1 : 0]            num_finale, num_finale_next;            
     logic        [6   : 0]              i, i_next;
     logic        [3   : 0]              j, j_next;
     logic                               sgn, sgn_next;
 
-    typedef enum logic [1:0]                //stati per la FSM
+    typedef enum logic [1:0]                
     { 
         IDLE        = 2'b00, 
         WORK        = 2'b01, 
@@ -48,11 +48,11 @@ module i2f(
 
             if (rst)
             begin
-                i           <= (DIM-1)-1;               //questo con dim = 21 era dim-1
+                i           <= (DIM-1)-1;               
                 ss          <= IDLE;     
                 num_finale  <= '0;
                 sgn         <= 0;
-                j           <= FRACT_WIDTH+1;           //sarebbe la posizione del LSB della mantissa nel vettore num_finale
+                j           <= FRACT_WIDTH+1;           //this is the LSB position of fractional part in the num_finale vector 
                 fract_o     <= '0;
                 exp_o       <= '0;
                 valid_i2f_o <=  0;
@@ -82,7 +82,7 @@ module i2f(
                     valid_i2f_o = 0;
                     if (valid_i2f_i)
                     begin
-                        i_next = DIM-1;                     //questo con dim = 21 era dim            
+                        i_next = DIM-1;                                
                         if (~integer_i[EXP_WIDTH-1])
                         begin
                                 sgn_next        = 0;
@@ -91,16 +91,16 @@ module i2f(
                         else
                         begin
                             sgn_next = 1;                          
-                            // complemento per avere il numero positivo, pero' cambiando segno
-                            num_finale_next = {~(integer_i+1)+1,~log_f_i[6:0], 7'b0000000};   //***
+                            // CPL2 of the integer part changing the sign (sgn_next)
+                            num_finale_next = {~(integer_i+1)+1,~log_f_i[6:0], 7'b0000000};   
                         end
                         ss_next = WORK;           
                     end
                 end
                 WORK: 
                 begin
-                    // scorro il vettore concatenato fino a che non trovo un 1, 
-                    //non devo prendere gli ultimi 6 bit lsb che li ho messi apposta a 0
+                    //searching for the first 1 from the left in num_finale vector
+                    //not considering the last 7 bits of 0-padding
                     if (num_finale[i] || i <= (EXP_WIDTH-1))        //warning! it was just '<' but in the case of log(1) it went out of range
                     begin
                         ss_next = EXP_CALC;
@@ -112,7 +112,7 @@ module i2f(
                 end
                 EXP_CALC: 
                 begin
-                    exp_o   = i - COMMA_POS + BIAS; //- polarizzazione 
+                    exp_o   = i - COMMA_POS + BIAS;                 //- bias 
                     sgn_o   = sgn;
                     ss_next = FRACT_CALC; 
                 end                      

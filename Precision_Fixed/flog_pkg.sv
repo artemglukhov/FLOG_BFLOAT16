@@ -1,27 +1,19 @@
 package flog_pkg;
 
-    //per importarlo inserire nel file sotto la dichiarazione del modulo 'import flog_pkg::*'
 
     parameter S_WIDTH           = 1;                                        //sign width
-    parameter FRACT_WIDTH       = 7;                                      //nominal width of the mantissa
+    parameter FRACT_WIDTH       = 7;                                        //nominal width of the mantissa
     parameter EXP_WIDTH         = 8;                                        //nominal width of the exponent
 
-    parameter FRACT_WIDTH_PHILO = 16;                                     //width of the mantissa for philo algorithm
+    parameter FRACT_WIDTH_PHILO = 16;                                       //width of the mantissa for philo algorithm
     parameter OUT_WIDTH_PHILO   = 7;                                        //width for the output vector of the philo algorithm
     parameter N_IT_PHILO        = ($clog2(OUT_WIDTH_PHILO)-1);              //number of iterations in philo algorithm
 
-    parameter BIAS              = 127;                                      //(1<<7)-1                                      //exponent bias
+    parameter BIAS              = 127;                                      //(1<<7)-1 exponent bias
 
-    parameter DIM               = 22;                                       //?? definizione??
+    parameter DIM               = 22;                                       //lenght of the i2f vector
     parameter COMMA_POS         = 14;                                       //comma position
 
-
-    /*  for future reference 
-        (&_op_i) = 1         se tutti i bit sono 1
-        ~(&_op_i) = 1        se almeno un bit � a 0
-        (|_op_i) = 1         se almeno un bit � a 1
-        ~(|_op_i) = 1        se tutti i bit sono a 0
-    */
 
     function automatic logic [7-1:0] FUNC_SpecialCaseDetector(input s_op_i, input [EXP_WIDTH-1:0] exp_op_i, input [FRACT_WIDTH-1:0] fract_op_i);
 

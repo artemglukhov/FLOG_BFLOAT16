@@ -4,13 +4,13 @@
 module tb_top_top;
 
 
-    /*importa funzioni DPI-C*/
+    /*import DPI-C functions*/
     //import "DPI-C" function int unsigned DPI_C_log2(int unsigned sign, int unsigned exp, int unsigned frac);
 
     import flog_pkg::*;
 
     parameter HALF_CLK_PERIOD_NS = 20;
-//  parameter WAIT_CYCLE        = 20;       //inutilizzato al momento
+//  parameter WAIT_CYCLE        = 20;       
 
 
     logic                       clk;
@@ -29,7 +29,7 @@ module tb_top_top;
 
 
 
-    int fd;                                                       //DPI
+    int fd;                                                       //file descriptor
     logic   [EXP_WIDTH-1:0]     exp_rand;
     logic   [FRACT_WIDTH-1:0]   fract_rand;
 
@@ -81,6 +81,9 @@ module tb_top_top;
 //        TASK_doFLog(1'b0, 8'b1111_1011, 7'b0101_011);               //op valid
         
         
+        /*
+        *     BRUTE FORCE APPROACH
+        */
        for(int i=0;i <=255; i++)
        begin
             for(int j=0;j<=127; j++)
@@ -105,7 +108,7 @@ module tb_top_top;
         // 0, 0x854c
         sign        = sign_task;
         exponent    = exponent_task;
-        fractional  = fractional_task;    //1,953125(in base dieci) -> log2(1,953125) = 0.9657842847 (con la calcolatrice) 
+        fractional  = fractional_task;    
         //----------------------------------------------   
 
         repeat(2) @(posedge clk);
