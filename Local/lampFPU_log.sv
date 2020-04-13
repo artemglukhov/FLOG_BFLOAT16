@@ -68,7 +68,7 @@ logic   [(LAMP_FLOAT_F_DW + G0 + 2)-1 : 0]                  lut_output;         
 logic   [(LAMP_FLOAT_F_DW+1)-1 : 0]                         f_temp;                     //(M-1)*(+-1)= (1.F-1)*(+-1) -> wf+1 bits          
 logic   [(LAMP_FLOAT_E_DW + LAMP_FLOAT_F_DW + G1)-1 : 0]    e_intermediate;             //X = result of log(2)*exp -> we+wf+g1 bits
 logic   [(2*LAMP_FLOAT_F_DW+G0+3)-1 : 0]                    f_intermediate;             //Y = result of f_temp*lut_ouput -> 2wf+g0+3 bits
-logic   [(LAMP_FLOAT_E_DW+2*LAMP_FLOAT_F_DW+GO+2)-1 : 0]    res_preNorm;                //Z = X + Y -> we+2wf+g0+2 bits
+logic   [(LAMP_FLOAT_E_DW+2*LAMP_FLOAT_F_DW+G0+2)-1 : 0]    res_preNorm;                //Z = X + Y -> we+2wf+g0+2 bits
 
 //////////////////////////////////////////////////
 //              sequential                      //
@@ -130,7 +130,7 @@ begin
 
     lut_ouput = LUT_log(f_op_r);
 
-    f_intermediate = f_temp * lut_ouput;
+    f_intermediate = f_temp * lut_output;
 
     //res_preNorm = e_intermediate + f_intermediate;
 

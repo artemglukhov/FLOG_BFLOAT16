@@ -619,6 +619,6 @@ package lampFPU_pkg;
 			8'b10110101 :    return 10'b0110101011;
 
 		endcase
-	end function
+	endfunction
 		
 endpackage
