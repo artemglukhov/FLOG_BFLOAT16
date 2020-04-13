@@ -116,9 +116,11 @@ begin
     end
     //else???
 
-    s_res_r = (|e_op_r) ? e_op_r[LAMP_FLOAT_E_DW-1] : compare_sqrt2;        //!!WARNING: on the paper it is an AND, but it writes that if E=0 or E!=0, so it should be an OR (?)
+
+    /* - to clarify wether there must be an AND  or and OR - */
+    s_res_r = (&e_op_r) ? e_op_r[LAMP_FLOAT_E_DW-1] : compare_sqrt2;        //!!WARNING: on the paper it is an AND, but it writes that if E=0 or E!=0, so it should be an OR (?)
     
-    f_temp = f_op_r - 1;
+    f_temp = f_op_r - (128);   // f_op_r=1.X -> f_temp = 0.X 
 
     if(s_res_r)     //if the sign is positive, we have to complement both the mantissa and the exponent 
     begin
@@ -126,13 +128,13 @@ begin
         f_temp  = (~f_temp) + 1;
     end
 
-    e_intermediate = e_op_r * LOG2;       //result in xxxxxxxxx.yyyyyyyyyy
+    e_intermediate = e_op_r * LOG2;       //result in xxxxxxxxx.yyyyyyyyyy  (8bit . 10bit)
 
-    lut_ouput = LUT_log(f_op_r);
+    lut_output = LUT_log(f_op_r);
 
-    f_intermediate = f_temp * lut_output;
+    f_intermediate = f_temp * lut_output;   //result in xx.yyyyyyyyyyyy... (2bit . 16bit)
 
-    //res_preNorm = e_intermediate + f_intermediate;
+     res_preNorm = {e_intermediate ,6'b0} + {6'b0, f_intermediate};     //padding both sides to match the dot position
 
     valid = doLog_i;        //at the end!
 end
