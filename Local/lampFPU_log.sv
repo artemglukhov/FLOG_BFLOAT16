@@ -11,7 +11,9 @@ module lampFPU_log (
 );
 
 import lampFPU_pkg::*;
-parameter SQRT2     =   7'b0110101; //1.4140625
+parameter SQRT2     =   7'b0110101; //1.4140625                         1.0110101       sqrt(2) in 8 bit  -> 181                                                            
+                                    //                                  0.1011010       sqrt(2)/2 in 8 bit -> 90
+
 parameter G0        =   1;          //guard bit for precision/rounding
 parameter G1        =   3;          //guard bit for precision/rounding
 parameter LOG2      =   10'b1011000101; //0.6931471806;
@@ -61,11 +63,12 @@ logic									    isCheckNanRes;
 logic									    isCheckSignRes;
 
 
-logic                                       compare_sqrt2;
-logic   [LAMP_FLOAT_F_DW + G0 + 1 : 0]      lut_output;
-logic   [LAMP_FLOAT_F_DW : 0]               f_intermediate;
-logic   [LAMP_FLOAT_E_DW + LAMP_FLOAT_F_DW + G1 : 0] e_intermediate;
-
+logic                                                       compare_sqrt2;
+logic   [(LAMP_FLOAT_F_DW + G0 + 2)-1 : 0]                  lut_output;                 //lut output wf+g0+2 bits
+logic   [(LAMP_FLOAT_F_DW+1)-1 : 0]                         f_temp;                     //(M-1)*(+-1)= (1.F-1)*(+-1) -> wf+1 bits          
+logic   [(LAMP_FLOAT_E_DW + LAMP_FLOAT_F_DW + G1)-1 : 0]    e_intermediate;             //X = result of log(2)*exp -> we+wf+g1 bits
+logic   [(2*LAMP_FLOAT_F_DW+G0+3)-1 : 0]                    f_intermediate;             //Y = result of f_temp*lut_ouput -> 2wf+g0+3 bits
+logic   [(LAMP_FLOAT_E_DW+2*LAMP_FLOAT_F_DW+GO+2)-1 : 0]    res_preNorm;                //Z = X + Y -> we+2wf+g0+2 bits
 
 //////////////////////////////////////////////////
 //              sequential                      //
@@ -110,21 +113,26 @@ begin
     begin
         f_op_r  = (f_op_r >> 1); //divide by 2
         e_op_r  = e_op_r + 1;
-
     end
+    //else???
 
     s_res_r = (|e_op_r) ? e_op_r[LAMP_FLOAT_E_DW-1] : compare_sqrt2;        //!!WARNING: on the paper it is an AND, but it writes that if E=0 or E!=0, so it should be an OR (?)
     
-    f_intermediate = f_op_r - 1;
+    f_temp = f_op_r - 1;
 
     if(s_res_r)     //if the sign is positive, we have to complement both the mantissa and the exponent 
     begin
         e_op_r         = (~e_op_r) + 1;
-        f_intermediate  = (~f_intermediate) + 1;
+        f_temp  = (~f_temp) + 1;
     end
 
     e_intermediate = e_op_r * LOG2;       //result in xxxxxxxxx.yyyyyyyyyy
 
+    lut_ouput = LUT_log(f_op_r);
+
+    f_intermediate = f_temp * lut_ouput;
+
+    //res_preNorm = e_intermediate + f_intermediate;
 
     valid = doLog_i;        //at the end!
 end
