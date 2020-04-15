@@ -69,7 +69,7 @@ logic   [(LAMP_FLOAT_F_DW+1)-1 : 0]                         f_temp;             
 logic   [(LAMP_FLOAT_E_DW + LAMP_FLOAT_F_DW + G1)-1 : 0]    e_intermediate;             //X = result of log(2)*exp -> we+wf+g1 bits
 logic   [(2*LAMP_FLOAT_F_DW+G0+3)-1 : 0]                    f_intermediate;             //Y = result of f_temp*lut_ouput -> 2wf+g0+3 bits
 logic   [(LAMP_FLOAT_E_DW+2*LAMP_FLOAT_F_DW+G0+2)-1 : 0]    res_preNorm;                //Z = X + Y -> we+2wf+g0+2 bits
-
+logic                                       is_f_temp_negative;
 //////////////////////////////////////////////////
 //              sequential                      //
 //////////////////////////////////////////////////
@@ -116,26 +116,40 @@ begin
     end
     //else???
 
-
-    /* - to clarify wether there must be an AND  or and OR - */
-    s_res_r = (&e_op_r) ? e_op_r[LAMP_FLOAT_E_DW-1] : compare_sqrt2;        //!!WARNING: on the paper it is an AND, but it writes that if E=0 or E!=0, so it should be an OR (?)
+    s_res_r = (|e_op_r) ? e_op_r[LAMP_FLOAT_E_DW-1] : compare_sqrt2;        //!!WARNING: on the paper it is an AND, but it writes that if E=0 or E!=0, so it should be an OR (?)
     
     f_temp = f_op_r - (128);   // f_op_r=1.X -> f_temp = 0.X 
+    
+    if(f_temp[(LAMP_FLOAT_F_DW+1)-1])   //if the first bit is 1 -> aka negative value
+    begin
+        f_temp  = (~f_temp) + 1;
+        is_f_temp_negative = 1;
+    end
+    else
+    begin
+        is_f_temp_negative = 0;
+    end
+   
 
     if(s_res_r)     //if the sign is positive, we have to complement both the mantissa and the exponent 
     begin
         e_op_r         = (~e_op_r) + 1;
-        f_temp  = (~f_temp) + 1;
+        //f_temp  = (~f_temp) + 1;
     end
 
-    e_intermediate = e_op_r * LOG2;       //result in xxxxxxxxx.yyyyyyyyyy  (8bit . 10bit)
+    e_intermediate = e_op_r * LOG2;       //result in xxxxxxxxx.yyyyyyyyyy
 
     lut_output = LUT_log(f_op_r);
 
-    f_intermediate = f_temp * lut_output;   //result in xx.yyyyyyyyyyyy... (2bit . 16bit)
-
-     res_preNorm = {e_intermediate ,6'b0} + {6'b0, f_intermediate};     //padding both sides to match the dot position
-
+    f_intermediate = f_temp * lut_output;
+if(is_f_temp_negative ^ s_res_r)       // A xor B
+    begin
+        res_preNorm = {e_intermediate ,6'b0} - {6'b0, f_intermediate};
+    end
+    else
+    begin
+        res_preNorm = {e_intermediate ,6'b0} + {6'b0, f_intermediate};
+    end
     valid = doLog_i;        //at the end!
 end
 
