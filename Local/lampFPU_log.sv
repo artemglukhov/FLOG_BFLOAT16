@@ -62,6 +62,11 @@ logic									    isCheckInfRes;
 logic									    isCheckNanRes;
 logic									    isCheckSignRes;
 
+logic                                       isZ_op_r;
+logic                                       isInf_op_r;
+logic                                       isSNAN_op_r;
+logic                                       isQNAN_op_r;
+
 
 logic                                                       compare_sqrt2;
 logic   [(LAMP_FLOAT_F_DW + G0 + 2)-1 : 0]                  lut_output;                 //lut output wf+g0+2 bits
@@ -69,7 +74,7 @@ logic   [(LAMP_FLOAT_F_DW+1)-1 : 0]                         f_temp;             
 logic   [(LAMP_FLOAT_E_DW + LAMP_FLOAT_F_DW + G1)-1 : 0]    e_intermediate;             //X = result of log(2)*exp -> we+wf+g1 bits
 logic   [(2*LAMP_FLOAT_F_DW+G0+3)-1 : 0]                    f_intermediate;             //Y = result of f_temp*lut_ouput -> 2wf+g0+3 bits
 logic   [(LAMP_FLOAT_E_DW+2*LAMP_FLOAT_F_DW+G0+2)-1 : 0]    res_preNorm;                //Z = X + Y -> we+2wf+g0+2 bits
-logic                                       is_f_temp_negative;
+logic                                                       is_f_temp_negative;
 //////////////////////////////////////////////////
 //              sequential                      //
 //////////////////////////////////////////////////
@@ -78,6 +83,13 @@ always@(posedge clk)
 begin
     if(rst)
     begin
+        //internal registers
+        isZ_op_r        <= '0;
+        isInf_op_r      <= '0;
+        isSNAN_op_r     <= '0;
+        isQNAN_op_r     <= '0;
+
+        //output registers
         s_res_o         <= '0;
         e_res_o         <= '0;
         f_res_o         <= '0;
@@ -88,6 +100,13 @@ begin
     end
     else
     begin
+        //internal registers
+        isZ_op_r        <= isZ_op_i;
+        isInf_op_r      <= isInf_op_i;
+        isSNAN_op_r     <= isSNAN_op_i;
+        isQNAN_op_r     <= isQNAN_op_i;
+
+        //output registers
         s_res_o         <= s_res_r;
         e_res_o         <= e_res_r;
         f_res_o         <= f_res_r;
@@ -131,7 +150,7 @@ begin
     end
    
 
-    if(s_res_r)     //if the sign is positive, we have to complement both the mantissa and the exponent 
+    if(s_res_r)     //if the sign is positive, we have to complement and the exponent 
     begin
         e_op_r         = (~e_op_r) + 1;
         //f_temp  = (~f_temp) + 1;
@@ -142,7 +161,7 @@ begin
     lut_output = LUT_log(f_op_r);
 
     f_intermediate = f_temp * lut_output;
-if(is_f_temp_negative ^ s_res_r)       // A xor B
+    if(is_f_temp_negative ^ s_res_r)       // A xor B
     begin
         res_preNorm = {e_intermediate ,6'b0} - {6'b0, f_intermediate};
     end
