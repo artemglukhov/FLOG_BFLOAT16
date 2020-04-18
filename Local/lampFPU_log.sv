@@ -32,7 +32,7 @@ input                                       isQNAN_op_i;
 //outputs
 output logic    [LAMP_FLOAT_S_DW-1:0]       s_res_o;
 output logic    [LAMP_FLOAT_E_DW-1:0]       e_res_o;
-output logic    [LAMP_FLOAT_F_DW-1:0]       f_res_o;
+output logic    [LAMP_FLOAT_F_DW-1:0]       f_res_o;        //to connect to post_norm
 output logic							    valid_o;
 output logic                                isOverflow_o;
 output logic                                isUnderflow_o;
@@ -48,7 +48,7 @@ logic   [LAMP_FLOAT_E_DW-1:0]               e_op_r; //register of the input expo
 logic   [LAMP_FLOAT_F_DW  :0]               f_op_r; //register of the input fractional, padded for 1.f
 logic   [LAMP_FLOAT_S_DW-1:0]               s_res_r;
 logic   [LAMP_FLOAT_E_DW-1:0]               e_res_r;
-logic   [LAMP_FLOAT_F_DW-1:0]               f_res_r;
+logic   [LAMP_FLOAT_F_DW+3-1:0]             f_res_r;
 logic									    valid;
 logic									    isOverflow;
 logic									    isUnderflow;
@@ -156,19 +156,22 @@ begin
         //f_temp  = (~f_temp) + 1;
     end
 
-    e_intermediate = e_op_r * LOG2;       //result in xxxxxxxxx.yyyyyyyyyy
+    e_intermediate = e_op_r * LOG2;       //result in xxxxxxxxx.yyyyyyyyyy (8bit . 10bit)
 
     lut_output = LUT_log(f_op_r);
 
-    f_intermediate = f_temp * lut_output;
+    f_intermediate = f_temp * lut_output;   //result in xx.yyyy(...) (2bit . 16bit)
     if(is_f_temp_negative ^ s_res_r)       // A xor B
     begin
-        res_preNorm = {e_intermediate ,6'b0} - {6'b0, f_intermediate};
+        res_preNorm = {e_intermediate ,6'b0} - {6'b0, f_intermediate};  //result in xxxxxxxxx.yyyyyy(...) (9bit . 16bit)
     end
     else
     begin
         res_preNorm = {e_intermediate ,6'b0} + {6'b0, f_intermediate};
     end
+
+    {e_res_r,f_res_r} = FUNC_fix2float_log(res_preNorm);
+
     valid = doLog_i;        //at the end!
 end
 

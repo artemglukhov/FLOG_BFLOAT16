@@ -68,24 +68,36 @@ module tb;
         
         
         repeat(2) @(posedge clk);
-        rst         =  0;
-        doLog_i = 1;
+        rst <=  0;
+        
+        
+        
         @(posedge clk);
-        /* ----TEST 1 ---- */
-        s_op_i = 0;
-        //e_op_i = 8'b10010101;   //149
-        //e_op_i = 120;//8'b11111110;
-        //e_op_i = 127;
-        e_op_i = 126;
-        f_op_i = 7'b1010101;    //85
-        //f_op_i = 7'b0010101;    // 21
+        
+        TASK_doFLog(1'd0,8'd149,7'b1010101);
+        TASK_doFLog(1'd0,8'd121,7'b1010101);
 
 
-
-        wait(valid_o);
 
         $finish;
   
     end
+    task TASK_doFLog (input logic [LAMP_FLOAT_S_DW -1 :0]  sign_task, input logic [LAMP_FLOAT_E_DW-1 : 0] exponent_task, input logic [LAMP_FLOAT_F_DW-1 : 0] fractional_task );
+    
+            s_op_i  = sign_task;
+            e_op_i  = exponent_task;
+            f_op_i  = fractional_task;    
+            
+            doLog_i = 1;
+    
+            wait(valid_o);
+    
+            @(posedge clk);
+            
+            doLog_i     = 0;
+    
+            repeat(2) @(posedge clk);
+    
+    endtask
 
 endmodule
