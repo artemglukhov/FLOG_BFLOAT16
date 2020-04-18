@@ -33,7 +33,7 @@ module tb;
     logic                                       isUnderflow_o;
     logic                                       isToRound_o;
 
-
+    int fd;
     
     always #HALF_CLK_PERIOD_NS clk = ~clk;
 
@@ -66,6 +66,7 @@ module tb;
         rst          = 1;
         doLog_i      = 0;
         
+        fd = $fopen("C:/Xilinx/ZONI_FLOG/lamp_log1/results_scd.txt", "w");
         
         repeat(2) @(posedge clk);
         rst <=  0;
@@ -73,11 +74,17 @@ module tb;
         
         
         @(posedge clk);
+        for(int i=0;i <=255; i++)
+        begin
+            for(int j=0;j<=127; j++)
+            begin
+                TASK_doFLog(1'd0,i,j);
+            end
+        end
         
-        TASK_doFLog(1'd0,8'd149,7'b1010101);
-        TASK_doFLog(1'd0,8'd121,7'b1010101);
+        //TASK_doFLog(1'd0,8'b01111110,7'b1111110);
 
-
+        $fclose(fd);
 
         $finish;
   
@@ -95,7 +102,10 @@ module tb;
             @(posedge clk);
             
             doLog_i     = 0;
-    
+
+            $fdisplay(fd, "%b, %b, %b", s_op_i, e_op_i, f_op_i);
+            $fdisplay(fd, "%b, %b, %b", s_res_o, e_res_o, f_res_o);
+            $fdisplay(fd, " ");
             repeat(2) @(posedge clk);
     
     endtask

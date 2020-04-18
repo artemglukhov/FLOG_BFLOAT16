@@ -109,7 +109,7 @@ begin
         //output registers
         s_res_o         <= s_res_r;
         e_res_o         <= e_res_r;
-        f_res_o         <= f_res_r;
+        f_res_o         <= f_res_r[9:3];    //cut just for the matlab script, TO ROUND CORRECTLY!
         valid_o         <= valid;
         isOverflow_o	<= isOverflow;
         isUnderflow_o	<= isUnderflow;
