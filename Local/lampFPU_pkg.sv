@@ -653,7 +653,7 @@ package lampFPU_pkg;
 	* 		ln(-x)			->		NaN
 	*/
 	function automatic logic[3:0] FUNC_calcInfNanResLog (
-				input isZ_op_i, isInf_op_i, input isSNan_op_i, input isQNan_op_i, input s_op_i
+				input isZ_op_i, input isInf_op_i, input isSNan_op_i, input isQNan_op_i, input s_op_i
 			);
 
 		logic isNan_op_i = isSNan_op_i || isQNan_op_i;
