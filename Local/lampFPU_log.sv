@@ -136,14 +136,9 @@ begin
         f_op_r  = (f_op_r >> 1); //divide by 2
         e_op_r  = e_op_r + 1;
     end
-    //else???
 
-    //if(e_op_r == 128 && compare_sqrt2)
-      //  s_intermediate = 0;
-    //else
-        s_intermediate = (|e_op_r) ? e_op_r[LAMP_FLOAT_E_DW-1] : compare_sqrt2;        //!!WARNING: on the paper it is an AND, but it writes that if E=0 or E!=0, so it should be an OR (?)
-    
-    
+    s_intermediate = (|e_op_r) ? e_op_r[LAMP_FLOAT_E_DW] : compare_sqrt2;        //!!WARNING: on the paper it is an AND, but it writes that if E=0 or E!=0, so it should be an OR (?)
+
     f_temp = f_op_r - (128);   // f_op_r=1.X -> f_temp = 0.X 
     
     if(f_temp[(LAMP_FLOAT_F_DW+1)-1])   //if the first bit is 1 -> aka negative value
