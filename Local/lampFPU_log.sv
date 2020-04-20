@@ -44,7 +44,7 @@ output logic                                isToRound_o;
 
 
 
-logic   [LAMP_FLOAT_E_DW-1:0]               e_op_r; //register of the input exponent
+logic   [LAMP_FLOAT_E_DW  :0]               e_op_r; //register of the input exponent    - 1bit MSB padding for overflow correction
 logic   [LAMP_FLOAT_F_DW  :0]               f_op_r; //register of the input fractional, padded for 1.f
 logic                                       s_op_r;
 logic   [LAMP_FLOAT_S_DW-1:0]               s_res_r;
@@ -126,7 +126,7 @@ end
 always_comb
 begin
     s_op_r = s_op_i;
-    e_op_r = e_op_i - LAMP_FLOAT_E_BIAS;    //biased input exponent
+    e_op_r =  {1'b0,e_op_i} - LAMP_FLOAT_E_BIAS;    //biased input exponent - padded for overflow detection
     f_op_r = {1'b1,f_op_i};                    // M=1.F
 
     compare_sqrt2 = (f_op_r[LAMP_FLOAT_F_DW-1:0] > SQRT2) ? 1'b1 : 1'b0;    //compare if the F is bigger than square root of 2
@@ -138,7 +138,11 @@ begin
     end
     //else???
 
-    s_intermediate = (|e_op_r) ? e_op_r[LAMP_FLOAT_E_DW-1] : compare_sqrt2;        //!!WARNING: on the paper it is an AND, but it writes that if E=0 or E!=0, so it should be an OR (?)
+    //if(e_op_r == 128 && compare_sqrt2)
+      //  s_intermediate = 0;
+    //else
+        s_intermediate = (|e_op_r) ? e_op_r[LAMP_FLOAT_E_DW-1] : compare_sqrt2;        //!!WARNING: on the paper it is an AND, but it writes that if E=0 or E!=0, so it should be an OR (?)
+    
     
     f_temp = f_op_r - (128);   // f_op_r=1.X -> f_temp = 0.X 
     
@@ -159,7 +163,7 @@ begin
         //f_temp  = (~f_temp) + 1;
     end
 
-    e_intermediate = e_op_r * LOG2;       //result in xxxxxxxxx.yyyyyyyyyy (8bit . 10bit)
+    e_intermediate = e_op_r[LAMP_FLOAT_E_DW-1:0] * LOG2;       //result in xxxxxxxxx.yyyyyyyyyy (8bit . 10bit)
 
     lut_output = LUT_log(f_op_r);
 

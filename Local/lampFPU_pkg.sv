@@ -658,9 +658,9 @@ package lampFPU_pkg;
 
 		logic isNan_op_i = isSNan_op_i || isQNan_op_i;
 		
-		logic isValidRes, isNanRes, isInfRes signRes;							//signRes is the sign of the special case output
+		logic isValidRes, isNanRes, isInfRes, signRes;							//signRes is the sign of the special case output
 
-		isValidRes	= (isZ_op_i || isInf_op_i || isNan_op1) ? 1 : 0;			//signal that tells us if the result is a special case
+		isValidRes	= (isZ_op_i || isInf_op_i || isNan_op_i) ? 1 : 0;			//signal that tells us if the result is a special case
 
 		case({isZ_op_i, isInf_op_i, isNan_op_i, s_op_i})
 			4'b00_00: begin isNanRes = 0; isInfRes = 0; signRes = 0;			end

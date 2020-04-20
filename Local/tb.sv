@@ -24,6 +24,7 @@ module tb;
     logic                                       isInf_op_i;
     logic                                       isSNAN_op_i;
     logic                                       isQNAN_op_i;
+    logic                                       isDN_op_i;
     //outputs
     logic           [LAMP_FLOAT_S_DW-1:0]       s_res_o;
     logic           [LAMP_FLOAT_E_DW-1:0]       e_res_o;
@@ -95,8 +96,11 @@ module tb;
             e_op_i  = exponent_task;
             f_op_i  = fractional_task;    
             
+            
+            {isInf_op_i,isDN_op_i,isZ_op_i,isSNAN_op_i, isQNAN_op_i} = FUNC_checkOperand({s_op_i,e_op_i,f_op_i});
+            
             doLog_i = 1;
-    
+            
             wait(valid_o);
     
             @(posedge clk);
