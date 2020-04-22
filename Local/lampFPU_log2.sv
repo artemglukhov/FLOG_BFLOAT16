@@ -30,13 +30,13 @@ input                                       isInf_op_i;
 input                                       isSNAN_op_i;
 input                                       isQNAN_op_i;
 //outputs
-output logic    [LAMP_FLOAT_S_DW-1:0]       s_res_o;
-output logic    [LAMP_FLOAT_E_DW-1:0]       e_res_o;
-output logic    [LAMP_FLOAT_F_DW-1:0]       f_res_o;        //to connect to post_norm
-output logic							    valid_o;
-output logic                                isOverflow_o;
-output logic                                isUnderflow_o;
-output logic                                isToRound_o;
+output logic    [LAMP_FLOAT_S_DW-1:0]               s_res_o;
+output logic    [LAMP_FLOAT_E_DW-1:0]               e_res_o;
+output logic    [(1+1+LAMP_FLOAT_F_DW+3)-1:0]       f_res_o;        //to connect to post_norm
+output logic							            valid_o;
+output logic                                        isOverflow_o;
+output logic                                        isUnderflow_o;
+output logic                                        isToRound_o;
 
 //////////////////////////////////////////////////
 //              internal wires                  //
@@ -49,7 +49,7 @@ logic   [LAMP_FLOAT_F_DW  :0]               f_op_r; //register of the input frac
 logic                                       s_op_r;
 logic   [LAMP_FLOAT_S_DW-1:0]               s_res_r;
 logic   [LAMP_FLOAT_E_DW-1:0]               e_res_r;
-logic   [LAMP_FLOAT_F_DW+3-1:0]             f_res_r;
+logic   [(1+1+LAMP_FLOAT_F_DW+3)-1:0]       f_res_r;
 logic									    valid;
 logic									    isOverflow;
 logic									    isUnderflow;
@@ -111,7 +111,7 @@ begin
         //output registers
         s_res_o         <= s_res_r;
         e_res_o         <= e_res_r;
-        f_res_o         <= f_res_r[9:3];    //cut just for the matlab script, TO ROUND CORRECTLY! remember to remove the limitation [9:3]
+        f_res_o         <= f_res_r;    //cut just for the matlab script, TO ROUND CORRECTLY! remember to remove the limitation [9:3]
         valid_o         <= valid;
         isOverflow_o	<= isOverflow;
         isUnderflow_o	<= isUnderflow;
@@ -177,13 +177,13 @@ begin
     {isCheckNanInfValid, isCheckNanRes, isCheckInfRes, isCheckSignRes} = FUNC_calcInfNanResLog(isZ_op_r, isInf_op_r, isSNAN_op_r, isQNAN_op_r, s_op_r);
 
     unique if(isCheckNanRes)
-        {s_res_r, e_res_r, f_res_r}     =   {isCheckSignRes, QNAN_E_F, 3'b0};
+        {s_res_r, e_res_r, f_res_r}     =   {isCheckSignRes, QNAN_E_F, 5'b0};
     else if(isCheckInfRes)
-        {s_res_r, e_res_r, f_res_r}     =   {isCheckSignRes, INF_E_F, 3'b0};
+        {s_res_r, e_res_r, f_res_r}     =   {isCheckSignRes, INF_E_F, 5'b0};
     else
     begin
-        {s_res_r, e_res_r, f_res_r}     =   {s_intermediate, FUNC_fix2float_log(res_preNorm)};
-        //f_res_r[3+:LAMP_FLOAT_F_DW]     =   FUNC_rndToNearestEven({1'b0, 1'b1, f_res_r});
+        {s_res_r, e_res_r, f_res_r}     =   {s_intermediate, FUNC_fix2float_log(res_preNorm), 2'b00};
+        f_res_r                         =   {1'b0, 1'b1, f_res_r[11:2]};
     end
 
     

@@ -26,13 +26,13 @@ module tb;
     logic                                       isQNAN_op_i;
     logic                                       isDN_op_i;
     //outputs
-    logic           [LAMP_FLOAT_S_DW-1:0]       s_res_o;
-    logic           [LAMP_FLOAT_E_DW-1:0]       e_res_o;
-    logic           [LAMP_FLOAT_F_DW-1:0]       f_res_o;
-    logic                                       valid_o;
-    logic                                       isOverflow_o;
-    logic                                       isUnderflow_o;
-    logic                                       isToRound_o;
+    logic           [LAMP_FLOAT_S_DW-1:0]               s_res_o;
+    logic           [LAMP_FLOAT_E_DW-1:0]               e_res_o;
+    logic           [(1+1+LAMP_FLOAT_F_DW+3)-1:0]       f_res_o;
+    logic                                               valid_o;
+    logic                                               isOverflow_o;
+    logic                                               isUnderflow_o;
+    logic                                               isToRound_o;
 
     int fd;
     
