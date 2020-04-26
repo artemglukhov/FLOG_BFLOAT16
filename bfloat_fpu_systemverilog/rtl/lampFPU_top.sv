@@ -747,11 +747,13 @@ output	logic							isReady_o;
 			.rst					(rst),
 			//	inputs
 			.doLog_i				(doLog_r),
-			.s_op1_i				(s_op1_r),
-			.isZ_op1_i				(isZ_op1_r),
-			.isInf_op1_i			(isInf_op1_r),
-			.isSNAN_op1_i			(isSNAN_op1_r),
-			.isQNAN_op1_i			(isQNAN_op1_r),
+			.s_op_i				    (s_op1_r),
+			.e_op_i                 (e_op1_r),
+			.f_op_i                 (f_op1_r),
+			.isZ_op_i				(isZ_op1_r),
+			.isInf_op_i			    (isInf_op1_r),
+			.isSNAN_op_i			(isSNAN_op1_r),
+			.isQNAN_op_i			(isQNAN_op1_r),
 			//	outputs
 			.s_res_o				(log_s_res),
 			.e_res_o				(log_e_res),

@@ -14,7 +14,7 @@
 //
 // Date: 30.09.2019
 
-#include "C:\Xilinx\Vivado\2018.2\data\xsim\include\svdpi.h"
+#include "/opt/Xilinx/Vivado/2018.2/data/xsim/include/svdpi.h"
 #include <stdio.h>
 #include <math.h>
 
@@ -237,6 +237,20 @@ DPI_fle(unsigned int op1, unsigned int op2)
 	unsigned int res = f_op1 <= f_op2;
 	// return 1bit comparison flag
 	return res;
+}
+
+//
+// flog
+//
+unsigned int
+DPI_flog(unsigned int op1)
+{
+	//unsigned -> float
+	float f_op = *((float*) &op1);
+	// perform fdiv
+	float f_res = log(f_op);
+	// return 32bit float encoding
+	return *((unsigned int*) &f_res);
 }
 
 //int

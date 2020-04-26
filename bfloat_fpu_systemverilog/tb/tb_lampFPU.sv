@@ -27,6 +27,7 @@ module tb_lampFPU;
 	import "DPI-C" function int unsigned DPI_fle( input int unsigned op1, input int unsigned op2 );
 	import "DPI-C" function int unsigned DPI_i2f( input int unsigned op1 );
 	import "DPI-C" function int unsigned DPI_f2i( input int unsigned op1 );
+	import "DPI-C" function int unsigned DPI_flog( input int unsigned op1 );		
 
 	parameter HALF_CLK_PERIOD_NS=20;
 
@@ -90,6 +91,7 @@ module tb_lampFPU;
 		TASK_testArith (FPU_SUB);
 		TASK_testArith (FPU_MUL);
 		TASK_testArith (FPU_DIV);
+		TASK_testArith (FPU_LOG);
 		TASK_testCmp ();
 		TASK_testI2f ();
 		rndMode_i_tb	= 	FPU_RNDMODE_TRUNCATE;
@@ -267,6 +269,7 @@ module tb_lampFPU;
 			FPU_SUB:	tb_res	=	DPI_fsub (op1 << (LAMP_INTEGER_DW - LAMP_FLOAT_DW), op2 << (LAMP_INTEGER_DW - LAMP_FLOAT_DW));
 			FPU_MUL:	tb_res	=	DPI_fmul (op1 << (LAMP_INTEGER_DW - LAMP_FLOAT_DW), op2 << (LAMP_INTEGER_DW - LAMP_FLOAT_DW));
 			FPU_DIV:	tb_res	=	DPI_fdiv (op1 << (LAMP_INTEGER_DW - LAMP_FLOAT_DW), op2 << (LAMP_INTEGER_DW - LAMP_FLOAT_DW));
+			FPU_LOG:	tb_res	=	DPI_flog (op1 << (LAMP_INTEGER_DW - LAMP_FLOAT_DW)); //<< (LAMP_INTEGER_DW - LAMP_FLOAT_DW));
 		endcase
 
 		$strobe ("@%0t - Start FPU operation: opcode:%s",
