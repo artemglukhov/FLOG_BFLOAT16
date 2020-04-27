@@ -3,7 +3,7 @@ module lampFPU_log (
     //inputs
     doLog_i,
     s_op_i, e_op_i, f_op_i,
-    isZ_op_i, isInf_op_i, isSNAN_op_i, isQNAN_op_i,
+    isZ_op_i, isInf_op_i, isSNAN_op_i, isQNAN_op_i, isDN_op_i,
 
     //outputs
     s_res_o, e_res_o, f_res_o, valid_o,
@@ -29,6 +29,7 @@ input                                       isZ_op_i;
 input                                       isInf_op_i;
 input                                       isSNAN_op_i;
 input                                       isQNAN_op_i;
+input                                       isDN_op_i;
 //outputs
 output logic    [LAMP_FLOAT_S_DW-1:0]               s_res_o;
 output logic    [LAMP_FLOAT_E_DW-1:0]               e_res_o;
@@ -46,7 +47,6 @@ output logic                                        isToRound_o;
 
 logic   [LAMP_FLOAT_E_DW  :0]               e_op_r; //register of the input exponent    - 1bit MSB padding for overflow correction
 logic   [LAMP_FLOAT_F_DW  :0]               f_op_r; //register of the input fractional, padded for 1.f
-logic                                       s_op_r;
 logic   [LAMP_FLOAT_S_DW-1:0]               s_res_r;
 logic   [LAMP_FLOAT_E_DW-1:0]               e_res_r;
 logic   [(1+1+LAMP_FLOAT_F_DW+3)-1:0]       f_res_r;
@@ -62,11 +62,6 @@ logic									    isZeroRes;
 logic									    isCheckInfRes;
 logic									    isCheckNanRes;
 logic									    isCheckSignRes;
-
-logic                                       isZ_op_r;
-logic                                       isInf_op_r;
-logic                                       isSNAN_op_r;
-logic                                       isQNAN_op_r;
 
 
 logic                                                       compare_sqrt2;
@@ -85,12 +80,6 @@ always@(posedge clk)
 begin
     if(rst)
     begin
-        //internal registers
-        isZ_op_r        <= '0;
-        isInf_op_r      <= '0;
-        isSNAN_op_r     <= '0;
-        isQNAN_op_r     <= '0;
-
         //output registers
         s_res_o         <= '0;
         e_res_o         <= '0;
@@ -102,16 +91,10 @@ begin
     end
     else
     begin
-        //internal registers
-        isZ_op_r        <= isZ_op_i;
-        isInf_op_r      <= isInf_op_i;
-        isSNAN_op_r     <= isSNAN_op_i;
-        isQNAN_op_r     <= isQNAN_op_i;
-
         //output registers
         s_res_o         <= s_res_r;
         e_res_o         <= e_res_r;
-        f_res_o         <= f_res_r;    //cut just for the matlab script, TO ROUND CORRECTLY! remember to remove the limitation [9:3]
+        f_res_o         <= f_res_r;
         valid_o         <= valid;
         isOverflow_o	<= isOverflow;
         isUnderflow_o	<= isUnderflow;
@@ -125,7 +108,6 @@ end
 //////////////////////////////////////////////////
 always_comb
 begin
-    s_op_r = s_op_i;
     e_op_r =  {1'b0,e_op_i} - LAMP_FLOAT_E_BIAS;    //biased input exponent - padded for overflow detection
     f_op_r = {1'b1,f_op_i};                    // M=1.F
 
@@ -174,7 +156,7 @@ begin
 
     //{e_res_r,f_res_r} = FUNC_fix2float_log(res_preNorm);
 
-    {isCheckNanInfValid, isCheckNanRes, isCheckInfRes, isCheckSignRes} = FUNC_calcInfNanResLog(isZ_op_r, isInf_op_r, isSNAN_op_r, isQNAN_op_r, s_op_r);
+    {isCheckNanInfValid, isCheckNanRes, isCheckInfRes, isCheckSignRes} = FUNC_calcInfNanResLog(isZ_op_i, isInf_op_i, isSNAN_op_i, isQNAN_op_i, isDN_op_i, s_op_i);
 
     unique if(isCheckNanRes)
         {s_res_r, e_res_r, f_res_r}     =   {isCheckSignRes, QNAN_E_F, 5'b0};

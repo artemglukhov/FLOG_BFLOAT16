@@ -29,7 +29,7 @@ module tb_lampFPU;
 	import "DPI-C" function int unsigned DPI_f2i( input int unsigned op1 );
 	import "DPI-C" function int unsigned DPI_flog( input int unsigned op1 );		
 
-	parameter HALF_CLK_PERIOD_NS=20;
+	parameter HALF_CLK_PERIOD_NS=5;
 
 	logic							clk;
 	logic							rst;
@@ -87,15 +87,15 @@ module tb_lampFPU;
 //			@(posedge clk);
 //		end
 		rndMode_i_tb	= 	FPU_RNDMODE_NEAREST;
-		TASK_testArith (FPU_ADD);
-		TASK_testArith (FPU_SUB);
-		TASK_testArith (FPU_MUL);
-		TASK_testArith (FPU_DIV);
+		//TASK_testArith (FPU_ADD);
+		//TASK_testArith (FPU_SUB);
+		//TASK_testArith (FPU_MUL);
+		//TASK_testArith (FPU_DIV);
 		TASK_testArith (FPU_LOG);
-		TASK_testCmp ();
-		TASK_testI2f ();
-		rndMode_i_tb	= 	FPU_RNDMODE_TRUNCATE;
-		TASK_testF2i ();
+		//TASK_testCmp ();
+		//TASK_testI2f ();
+		//rndMode_i_tb	= 	FPU_RNDMODE_TRUNCATE;
+		//TASK_testF2i ();
 		repeat(200) @(posedge clk);
 		$finish;
 	end
@@ -110,23 +110,49 @@ module tb_lampFPU;
 		logic	[LAMP_FLOAT_F_DW-1:0]	op2_fraction;
 
 		int								numTest;
-
 		numTest				=	0;
-		repeat (100)
-		begin
-			@(posedge clk);
-			numTest++;
-			$display("Test-%d",numTest);
-			op1_sign		=	$urandom_range(0,1);
-			op1_exponent	=	$urandom_range(0,255);
-			op1_fraction	=	(op1_exponent>=0 && op1_exponent<255) ? $random : $urandom_range(0,1)<<22 /*inf or qnan*/;
+		
+		for(int i=0; i<=255; i++)
+        begin
+            for(int j=0; j<=127; j++)
+            begin
+                @(posedge clk);
+                numTest++;
+                $display("Test-%d",numTest);
+                op1_exponent = i;
+                op1_fraction = j;
+                TASK_doArith_op (opcode, {1'd0, op1_exponent, op1_fraction}, {1'd0, i, j});
+            end
+        end
+//        TASK_doArith_op (opcode, {1'd0, 8'b10101010, 7'b1010100}, {1'd0, 8'b10101010, 7'b1010100});
+//        TASK_doArith_op (opcode, {1'd1, 8'b10101010, 7'b1010100}, {1'd0, 8'b10101010, 7'b1010100});
+//        TASK_doArith_op (opcode, {1'd0, 8'b10101010, 7'b1010100}, {1'd0, 8'b10101010, 7'b1010100});
+//        TASK_doArith_op (opcode, {1'd0, 8'b11111111, 7'b0000001}, {1'd0, 8'b10101010, 7'b1010100});
+//        TASK_doArith_op (opcode, {1'd0, 8'b11111111, 7'b0000000}, {1'd0, 8'b10101010, 7'b1010100});
+//        TASK_doArith_op (opcode, {1'd0, 8'b10101010, 7'b1010100}, {1'd0, 8'b10101010, 7'b1010100});
+        
+//        TASK_doArith_op (opcode, {1'd0, 8'b01010101, 7'b0011010}, {1'd0, 8'b01010101, 7'b0011010});
+//        TASK_doArith_op (opcode, {1'd0, 8'b01010101, 7'b0011010}, {1'd0, 8'b01010101, 7'b0011010});
+//        TASK_doArith_op (opcode, {1'd0, 8'b01000101, 7'b1001010}, {1'd0, 8'b01010101, 7'b0011010});
+//        TASK_doArith_op (opcode, {1'd0, 8'b01010101, 7'b0011010}, {1'd0, 8'b01010101, 7'b0011010});
+//        TASK_doArith_op (opcode, {1'd0, 8'b01000101, 7'b1001010}, {1'd0, 8'b01010101, 7'b0011010});
+//        TASK_doArith_op (opcode, {1'd0, 8'b01010101, 7'b0011010}, {1'd0, 8'b01010101, 7'b0011010});
 
-			op2_sign		=	$urandom_range(0,1);
-			op2_exponent	=	$urandom_range(0,255);
-			op2_fraction	=	(op2_exponent>=0 && op2_exponent<255) ? $random : $urandom_range(0,1)<<22 /*inf or qnan*/;
+//		repeat (100)
+//		begin
+//			@(posedge clk);
+//			numTest++;
+//			$display("Test-%d",numTest);
+//			op1_sign		=	$urandom_range(0,1);
+//			op1_exponent	=	$urandom_range(0,255);
+//			op1_fraction	=	(op1_exponent>=0 && op1_exponent<255) ? $random : $urandom_range(0,1)<<22 /*inf or qnan*/;
 
-			TASK_doArith_op (opcode, {op1_sign, op1_exponent, op1_fraction}, {op2_sign, op2_exponent, op2_fraction});
-		end
+//			op2_sign		=	$urandom_range(0,1);
+//			op2_exponent	=	$urandom_range(0,255);
+//			op2_fraction	=	(op2_exponent>=0 && op2_exponent<255) ? $random : $urandom_range(0,1)<<22 /*inf or qnan*/;
+
+//			TASK_doArith_op (opcode, {op1_sign, op1_exponent, op1_fraction}, {op2_sign, op2_exponent, op2_fraction});
+//		end
 	endtask
 
 	task TASK_testI2f ();

@@ -14,7 +14,7 @@
 //
 // Date: 30.09.2019
 
-#include "/opt/Xilinx/Vivado/2018.2/data/xsim/include/svdpi.h"
+#include "C:/Xilinx/Vivado/2018.2/data/xsim/include/svdpi.h"
 #include <stdio.h>
 #include <math.h>
 
@@ -247,32 +247,46 @@ DPI_flog(unsigned int op1)
 {
 	//unsigned -> float
 	float f_op = *((float*) &op1);
-	// perform fdiv
-	float f_res = log(f_op);
+	/* bitmask for denormal numbers				
+	 *	0 00000000 0101010
+	 *  1 11111111 0000000 &
+	 *  0 00000000 0000000	== 0	<-- the number is a denorm
+     *
+	 *  0 00000100 0101010
+	 *  1 11111111 0000000 &
+	 *  0 00000100 0000000	!= 0	<-- the number is not a denorm
+	 */
+
+	if(op1 & 0b11111111100000000000000000000000){
+		//perform fdiv	
+		float f_res = log(f_op);
+		return *((unsigned int*) &f_res);
+	}
+	else return ((unsigned int) (0b11111111100000000000000000000000));
 	// return 32bit float encoding
-	return *((unsigned int*) &f_res);
+	
 }
 
-//int
-//main()
-//{
-//	//float a=1.0*exp2(-(127));
-//	float a=1.75*exp2(6);
-//	float b=1.3, c=0;
-//
-//	//unsigned int u_a = DPI_f2i(*((unsigned int*) &a));
-//	
-//	//printFloatHex(a);
-//	//printFloatHex(b);
-//	
-//	printFloatBinary(a);
-//	printFloatBinary(b);
-//
-//	c = a + b;
-//	printFloatBinary(c);
-//
-//	//unsigned int tmpRes = DPI_fadd (*((unsigned int*) &a), *((unsigned int*) &b)  );
-//	//DPI_fPrint(tmpRes);
-//
-//	return 0;
-//}
+// int
+// main()
+// {
+// 	//float a=1.0*exp2(-(127));
+// 	//float a=1.75*exp2(6);
+// 	//float b=1.3, c=0;
+
+// 	//unsigned int u_a = DPI_f2i(*((unsigned int*) &a));
+	
+// 	//printFloatHex(a);
+// 	//printFloatHex(b);
+	
+// 	//printFloatBinary(a);
+// 	//printFloatBinary(b);
+
+// 	//c = a + b;
+// 	//printFloatBinary(c);
+
+// 	//unsigned int tmpRes = DPI_fadd (*((unsigned int*) &a), *((unsigned int*) &b)  );
+// 	//DPI_fPrint(tmpRes);
+// 	//DPI_fPrintHex(DPI_flog(0b00000000000000000000000000000000));
+// 	return 0;
+// }
