@@ -2,7 +2,7 @@ module lampFPU_log (
     clk,rst,
     //inputs
     doLog_i,
-    s_op_i, e_op_i, f_op_i,
+    s_op_i, extE_op1_i, extShF_op1_i,
     isZ_op_i, isInf_op_i, isSNAN_op_i, isQNAN_op_i, isDN_op_i,
 
     //outputs
@@ -23,8 +23,8 @@ input                                       rst;
 //inputs
 input                                       doLog_i;
 input           [LAMP_FLOAT_S_DW-1:0]       s_op_i;
-input           [LAMP_FLOAT_E_DW:0]         e_op_i;
-input           [LAMP_FLOAT_F_DW:0]         f_op_i;
+input           [LAMP_FLOAT_E_DW:0]         extE_op1_i;
+input           [LAMP_FLOAT_F_DW:0]         extShF_op1_i;
 input                                       isZ_op_i;
 input                                       isInf_op_i;
 input                                       isSNAN_op_i;
@@ -72,7 +72,20 @@ logic   [(2*LAMP_FLOAT_F_DW+G0+3)-1 : 0]                    f_intermediate, f_in
 logic   [(LAMP_FLOAT_E_DW+2*LAMP_FLOAT_F_DW+G0+2)-1 : 0]    res_preNorm;                //Z = X + Y -> we+2wf+g0+2 bits
 logic                                                       is_f_temp_negative, is_f_temp_negative_n;
 
-logic   [1:0]        ss, ss_next;
+//////////////////////////////////////////////////////////////////
+// 							state enum							//
+//////////////////////////////////////////////////////////////////
+
+	typedef enum logic [1:0]
+	{
+		IDLE	= 'd0,
+		WORK	= 'd1,
+		OUT	    = 'd2
+    }	ssLog;
+
+	ssLog 	ss, ss_next;
+
+
 //////////////////////////////////////////////////
 //              sequential                      //
 //////////////////////////////////////////////////
@@ -82,36 +95,36 @@ begin
     if(rst)
     begin
         //output registers
-        s_res_o         <= '0;
-        e_res_o         <= '0;
-        f_res_o         <= '0;
-        valid_o         <= '0;    
-        isOverflow_o    <= '0;
-        isUnderflow_o   <= '0;
-        isToRound_o     <= '0;
+        s_res_o             <= '0;
+        e_res_o             <= '0;
+        f_res_o             <= '0;
+        valid_o             <= '0;    
+        isOverflow_o        <= '0;
+        isUnderflow_o       <= '0;
+        isToRound_o         <= '0;
 
-        ss              <= '0;
-        is_f_temp_negative <= '0;
-        s_intermediate  <= '0;
-        e_intermediate  <= '0;
-        f_intermediate  <= '0;
+        ss                  <= IDLE;
+        is_f_temp_negative  <= '0;
+        s_intermediate      <= '0;
+        e_intermediate      <= '0;
+        f_intermediate      <= '0;
     end
     else
     begin
         //output registers
-        s_res_o         <= s_res_r_n;
-        e_res_o         <= e_res_r_n;
-        f_res_o         <= f_res_r_n;
-        valid_o         <= valid_n;
-        isOverflow_o	<= isOverflow;
-        isUnderflow_o	<= isUnderflow;
-        isToRound_o		<= isToRound;
+        s_res_o             <= s_res_r_n;
+        e_res_o             <= e_res_r_n;
+        f_res_o             <= f_res_r_n;
+        valid_o             <= valid_n;
+        isOverflow_o	    <= isOverflow;
+        isUnderflow_o	    <= isUnderflow;
+        isToRound_o		    <= isToRound;
 
-        ss              <= ss_next;
-        is_f_temp_negative <= is_f_temp_negative_n;
-        s_intermediate  <= s_intermediate_n;
-        e_intermediate  <= e_intermediate_n;
-        f_intermediate  <= f_intermediate_n;
+        ss                  <= ss_next;
+        is_f_temp_negative  <= is_f_temp_negative_n;
+        s_intermediate      <= s_intermediate_n;
+        e_intermediate      <= e_intermediate_n;
+        f_intermediate      <= f_intermediate_n;
     end
 end
 
@@ -130,25 +143,25 @@ begin
 
 
     case(ss)
-        2'b00:
+        IDLE:
         begin
             if(doLog_i)
-                ss_next = 2'b01;
+                ss_next = WORK;
         end
-        2'b01:
+        WORK:
         begin
-            compare_sqrt2 = (f_op_i[LAMP_FLOAT_F_DW-1:0] > SQRT2) ? 1'b1 : 1'b0;    //compare if the F is bigger than square root of 2
+            compare_sqrt2 = (extShF_op1_i[LAMP_FLOAT_F_DW-1:0] > SQRT2) ? 1'b1 : 1'b0;    //compare if the F is bigger than square root of 2
             
 
             if(compare_sqrt2)
             begin
-                f_op_r  = (f_op_i >> 1); //divide by 2
-                e_op_r  = e_op_i - LAMP_FLOAT_E_BIAS + 1;
+                f_op_r  = (extShF_op1_i >> 1); //divide by 2
+                e_op_r  = extE_op1_i - LAMP_FLOAT_E_BIAS + 1;
             end
             else
             begin
-                f_op_r  = f_op_i;
-                e_op_r  = e_op_i - LAMP_FLOAT_E_BIAS;
+                f_op_r  = extShF_op1_i;
+                e_op_r  = extE_op1_i - LAMP_FLOAT_E_BIAS;
             end
             
             f_temp = f_op_r - (128);   // f_op_r=1.X -> f_temp = 0.X 
@@ -178,9 +191,9 @@ begin
             e_intermediate_n = e_op_r[LAMP_FLOAT_E_DW-1:0] * LOG2;       //result in xxxxxxxxx.yyyyyyyyyy (8bit . 10bit)
 
 
-            ss_next = 2'b10;
+            ss_next = OUT;
         end
-        2'b10:
+        OUT:
         begin
             {isCheckNanInfValid, isCheckNanRes, isCheckInfRes, isCheckSignRes} = FUNC_calcInfNanResLog(isZ_op_i, isInf_op_i, isSNAN_op_i, isQNAN_op_i, isDN_op_i, s_op_i);
             if(is_f_temp_negative ^ s_intermediate)       // A xor B
@@ -201,14 +214,14 @@ begin
             else
             begin
                 {s_res_r_n, e_res_r_n, f_res_r_n}     =   {s_intermediate, FUNC_fix2float_log(res_preNorm), 2'b00};
-                f_res_r_n                         =   {1'b0, 1'b1, f_res_r_n[11:2]};
+                f_res_r_n                             =   {1'b0, 1'b1, f_res_r_n[11:2]};
             end
 
 
             valid_n = 1'b1;        //at the end!
             isToRound = ~isCheckNanInfValid;        //result is to round if it is not a special case
 
-            ss_next = 2'b00;
+            ss_next = IDLE;
         end
     endcase
 

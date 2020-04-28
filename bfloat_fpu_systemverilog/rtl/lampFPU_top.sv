@@ -755,8 +755,8 @@ output	logic							isReady_o;
 			//	inputs
 			.doLog_i				(doLog_r),
 			.s_op_i				    (s_op1_r),
-			.e_op_i                 (extE_op1_r),
-			.f_op_i                 (extF_op1_r),
+			.extE_op1_i             (extE_op1_r),
+			.extShF_op1_i           (extF_op1_r),
 			.isZ_op_i				(isZ_op1_r),
 			.isInf_op_i			    (isInf_op1_r),
 			.isSNAN_op_i			(isSNAN_op1_r),
