@@ -2,7 +2,7 @@ module lampFPU_log (
     clk,rst,
     //inputs
     doLog_i,
-    s_op_i, extE_op1_i, extShF_op1_i,
+    s_op_i, extE_op1_i, extF_op1_i,
     isZ_op_i, isInf_op_i, isSNAN_op_i, isQNAN_op_i, isDN_op_i,
 
     //outputs
@@ -21,15 +21,15 @@ parameter LOG2      =   10'b1011000101; //0.6931471806;
 input                                       clk;
 input                                       rst;
 //inputs
-input                                       doLog_i;
-input           [LAMP_FLOAT_S_DW-1:0]       s_op_i;
-input           [LAMP_FLOAT_E_DW:0]         extE_op1_i;
-input           [LAMP_FLOAT_F_DW:0]         extShF_op1_i;
-input                                       isZ_op_i;
-input                                       isInf_op_i;
-input                                       isSNAN_op_i;
-input                                       isQNAN_op_i;
-input                                       isDN_op_i;
+input                                               doLog_i;
+input           [LAMP_FLOAT_S_DW-1:0]               s_op_i;
+input           [LAMP_FLOAT_E_DW:0]                 extE_op1_i;
+input           [LAMP_FLOAT_F_DW:0]                 extF_op1_i;
+input                                               isZ_op_i;
+input                                               isInf_op_i;
+input                                               isSNAN_op_i;
+input                                               isQNAN_op_i;
+input                                               isDN_op_i;
 //outputs
 output logic    [LAMP_FLOAT_S_DW-1:0]               s_res_o;
 output logic    [LAMP_FLOAT_E_DW-1:0]               e_res_o;
@@ -150,17 +150,17 @@ begin
         end
         WORK:
         begin
-            compare_sqrt2 = (extShF_op1_i[LAMP_FLOAT_F_DW-1:0] > SQRT2) ? 1'b1 : 1'b0;    //compare if the F is bigger than square root of 2
+            compare_sqrt2 = (extF_op1_i[LAMP_FLOAT_F_DW-1:0] > SQRT2) ? 1'b1 : 1'b0;    //compare if the F is bigger than square root of 2
             
 
             if(compare_sqrt2)
             begin
-                f_op_r  = (extShF_op1_i >> 1); //divide by 2
+                f_op_r  = (extF_op1_i >> 1); //divide by 2
                 e_op_r  = extE_op1_i - LAMP_FLOAT_E_BIAS + 1;
             end
             else
             begin
-                f_op_r  = extShF_op1_i;
+                f_op_r  = extF_op1_i;
                 e_op_r  = extE_op1_i - LAMP_FLOAT_E_BIAS;
             end
             
