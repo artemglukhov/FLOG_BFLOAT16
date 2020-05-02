@@ -10,9 +10,7 @@ Maintainers (in alphabetical order):
 In this project we've added the natural logarithm operation in an already existing Floating Point Unit 16 bits running at 100Mhz.
 >The algorithm of our code is based on the scientific paper by [Florent de Dinechin, Jérémie Detrey](https://hal-ens-lyon.archives-ouvertes.fr/ensl-00542213/file/DetreyDinechinJMM.pdf).
 
-After the design of our IPcore we have compared its results with the one of a DPI code written in C and we have noticed some errors (due to rounding approximations) occurring in the LSB of the fractional part.   
-Using Matlab we have quantified all these errors computing some usefull stastical error parameters.
-Finally simulating the whole FPU we noted that our module takes 7 clock cycles between 2 consecutive logarithm operations with a WNS = 0.400ns.
+After the design of our IPcore we have compared its results with the one of a DPI code written in C and we have noticed some errors (due to rounding approximations) occurring in the LSB of the fractional part. Using Matlab we have quantified all these errors computing some usefull stastical error parameters. Finally simulating the whole FPU we noted that our module takes 7 clock cycles between 2 consecutive logarithm operations with a WNS = 0.400ns.
 
 # Licensing
 
