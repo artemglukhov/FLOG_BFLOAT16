@@ -7,12 +7,11 @@ Maintainers (in alphabetical order):
 
 ## Brief overview
 
-In a 16-bit FPU we are implementing a module which computes the natural logarithm, the algorithm is based on the scientific paper by [Florent de Dinechin, Jérémie Detrey](https://hal-ens-lyon.archives-ouvertes.fr/ensl-00542213/file/DetreyDinechinJMM.pdf).
-
-We have implemented a FPU_log module and simulated it on Vivado, then compared its results with a MATLAB script and at the
-end we instantiated it in the top module of the FPU.
-Simulating the whole project we noted that our module takes 7 clock cycles between 2 consecutive operations, and the only error we are committing
-is because of approximations errors between our module and the DPI, which causes an error of 1LSB in the mantissa.
+In this project we've added the natural logarithm operation in an already existing Floating Point Unit 16 bits running at 100Mhz.
+The algorithm of our code is based on the scientific paper by [Florent de Dinechin, Jérémie Detrey](https://hal-ens-lyon.archives-ouvertes.fr/ensl-00542213/file/DetreyDinechinJMM.pdf).
+After the design of our IPcore we have compared its results with the one of a DPI code written in C and we have noticed some errors (due to rounding approximations) occurring in the LSB of the fractional part.   
+Using Matlab we have quantified some usefull stastical error parameters that the module commit with the respect the ideal result. 
+Finally simulating the whole FPU we noted that our module takes 7 clock cycles between 2 consecutive logarithm operations with a WNS = 0.400ns.
 
 # Licensing
 
