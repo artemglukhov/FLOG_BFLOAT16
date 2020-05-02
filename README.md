@@ -1,5 +1,5 @@
 # FLOG_BFLOAT16
-Maintainers (in alphabetical order):
+## Maintainers (in alphabetical order):
 - Andrea Buffoli <andrea.buffoli@polimi.it>
 - Matteo Giacomello <matteo.giacomello@polimi.it>
 - Artem Glukhov <artem.glukhov@polimi.it>
