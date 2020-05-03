@@ -19,9 +19,6 @@
 
 \hypersetup{colorlinks, urlcolor={medium-blue}}
 
-\titleformat{\chapter} 
-{\normalfont\Huge\bfseries}{\thechapter}{24pt}{\Huge}   
-\titlespacing*{\chapter}{0pt}{-50pt}{40pt}
 
 \begin{document}
 
@@ -208,6 +205,7 @@ Also the Package was modified, with the addition of the folllowing functions:\\
 \\The second is a function used to transform a fixed point number into a $BFloat_{16}$ SEF notation;
 \\The last one is a function used to raise the correct output basing on the input flags. 
 
+\bigskip
 \section{Performances}
 
 The whole algorithm performs within 7 clock cycles while from the $doLog\_i$ assertion to the raise of $valid\_o$ register happens after just 4 clock cycles.
