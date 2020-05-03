@@ -7,24 +7,65 @@
 \usepackage{amsmath}
 \usepackage{mathtools}
 \usepackage{multirow}
+\usepackage{relsize}
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\usepackage{multicol}
+\usepackage{titlecaps}
+\usepackage{titlesec}
 
 \definecolor{medium-blue}{rgb}{0,0,1}
 \definecolor{mygray}{rgb}{0.8,0.8,0.8}
 
 \hypersetup{colorlinks, urlcolor={medium-blue}}
 
-% Title Page
-\title{Natural logarithm implementation for BFloat16 FPU}
-\author{
+\titleformat{\chapter} 
+{\normalfont\Huge\bfseries}{\thechapter}{24pt}{\Huge}   
+\titlespacing*{\chapter}{0pt}{-50pt}{40pt}
+
+\begin{document}
+
+\vspace{3cm}
+\begin{center}
+\bigskip
+\Large{\today}
+\vspace{0.5cm}
+
+{\titlecap{Embedded Systems} 
+\vspace{0.3cm}}\\
+\vspace{0.4cm}
+\bigskip
+\rule{\linewidth}{0.5mm}
+\titlecap{Natural logarithm implementation for BFloat16 FPU}\\
+\vspace{0.4cm}
+\titlecap{REV. 0.1}
+\end{center}
+
+\vfill
+\begin{multicols}{2}
+\includegraphics[height=3cm]{images/Logo_Polimi}
+
+\raggedright{\textbf{Authors} (in alphabetical order): {\\
 Andrea Buffoli\\
 Matteo Giacomello\\
 Artem Glukhov\\
-Giacomo Ticchi
+Giacomo Ticchi}\\
 }
+\end{multicols}
+
+\clearpage
+
+% Title Page
+%\title{Natural logarithm implementation for BFloat16 FPU}
+%\author{
+%Andrea Buffoli\\
+%Matteo Giacomello\\
+%Artem Glukhov\\
+%Giacomo Ticchi
+%}
 
 
-\begin{document}
-\maketitle
+%\maketitle
 \begin{abstract}
 The goal of the project was to add the support for the FLOG operation to a Floating Point Unit and verify the correctness against the results produced by the corresponding C function.
 Thus we designed a module which calculates the natural logarithm of a number in bfloat16 floating-point format (Brain Floating Point) and provides the result in the same format. 
@@ -91,19 +132,19 @@ The errors are more significant with respect to the simulations based on the DPI
 \begin{figure}[ht]
   \centering
     \includegraphics[width=0.7\textwidth]{images/hist.jpg}
-    \caption{Average percentage error.}
+    \caption{Histogram of the error.}
 \end{figure}
     
 \begin{figure}[ht]
   \centering
     \includegraphics[width=0.7\textwidth]{images/avg_err.jpg}
-    \caption{Average percentage error.}
+    \caption{Committed error.}
 \end{figure}
 
 \begin{figure}[]
   \centering
     \includegraphics[width=0.7\textwidth]{images/avg_perc_err.png}
-    \caption{Average percentage error.}
+    \caption{Percentage error.}
 \end{figure}
 \chapter{Integration}
 The aim of the project was to implement the natural logarithm module inside an already existing Floating Point Unit (FPU) provided by  Andrea Galimberti and Davide Zoni 
