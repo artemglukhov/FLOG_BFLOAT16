@@ -30,6 +30,8 @@ for i = 1 :2: x                              %CIOMA si può trovare un modo per r
     input1(i)= (-1)^(bin2dec(matrix(i,1)))*2^(bin2dec(matrix(i,2))-127)*(1+bin2dec(matrix(i,3))*2^(-7));
     if(input1(i) == inf_p)
         log_input(i) = inf_p;
+    elseif(input1(i) <= 1.170902576014388e-38)
+        log_input(i) = inf_n;
     elseif(input1(i) < 0)
         log_input(i) = QNaN;
     elseif(input1(i) == zero_p)
@@ -60,7 +62,7 @@ for i = 1 : size(diff,1)
     if diff(i,1)==0
         perc_error(i)=0;
     else
-        perc_error(i)     = (diff(i,2)./diff(i,1))*100;                %errore percentuale
+        perc_error(i)     = abs((diff(i,2)./diff(i,1))*100);                %errore percentuale
     end
 end
 
