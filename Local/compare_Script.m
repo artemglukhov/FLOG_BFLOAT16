@@ -27,11 +27,16 @@ output_RTL=zeros(x,1);
 diff=zeros(x/2,2);
 j=1;
 for i = 1 :2: x                              %CIOMA si può trovare un modo per riempire anche log_input e output_RTL senza zeri tra un numero e l'altro? pensiamoci 
-    input1(i)= (-1)^(bin2dec(matrix(i,1)))*2^(bin2dec(matrix(i,2))-127)*(1+bin2dec(matrix(i,3))*2^(-7));
+    if bin2dec(matrix(i,2))==0 && bin2dec(matrix(i,3))~=0
+        input1(i)= (-1)^(bin2dec(matrix(i,1)))*2^(1-127)*(bin2dec(matrix(i,3))*2^(-7));
+    else
+        input1(i)= (-1)^(bin2dec(matrix(i,1)))*2^(bin2dec(matrix(i,2))-127)*(1+bin2dec(matrix(i,3))*2^(-7));
+    end
+    
     if(input1(i) == inf_p)
         log_input(i) = inf_p;
-    elseif(input1(i) <= 1.170902576014388e-38)
-        log_input(i) = inf_n;
+    %elseif(input1(i) <= 1.170902576014388e-38)
+     %   log_input(i) = inf_n;
     elseif(input1(i) < 0)
         log_input(i) = QNaN;
     elseif(input1(i) == zero_p)

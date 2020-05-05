@@ -257,12 +257,12 @@ DPI_flog(unsigned int op1)
 	 *  0 00000100 0000000	!= 0	<-- the number is not a denorm
 	 */
 
-	if(op1 & 0b11111111100000000000000000000000){
+	//if(op1 & 0b11111111100000000000000000000000){
 		//perform fdiv	
 		float f_res = log(f_op);
 		return *((unsigned int*) &f_res);
-	}
-	else return ((unsigned int) (0b11111111100000000000000000000000));
+	//}
+	//else return ((unsigned int) (0b11111111100000000000000000000000));
 	// return 32bit float encoding
 	
 }

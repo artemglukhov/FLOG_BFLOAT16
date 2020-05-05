@@ -3,7 +3,7 @@ module lampFPU_log (
     //inputs
     doLog_i,
     s_op_i, extE_op1_i, extF_op1_i,
-    isZ_op_i, isInf_op_i, isSNAN_op_i, isQNAN_op_i, isDN_op_i,
+    isZ_op_i, isInf_op_i, isSNAN_op_i, isQNAN_op_i,
 
     //outputs
     s_res_o, e_res_o, f_res_o, valid_o,
@@ -11,7 +11,8 @@ module lampFPU_log (
 );
 
 import lampFPU_pkg::*;
-parameter SQRT2     =   7'b0110101; //1.4140625                         1.0110101       sqrt(2) in 8 bit  -> 181                                                            
+parameter SQRT2     =   7'b0110101; //1.4140625                         1.0110101       sqrt(2) in 8 bit  -> 181 
+parameter SQRT2half =   8'b01011010;                                                           
                                     //                                  0.1011010       sqrt(2)/2 in 8 bit -> 90
 
 parameter G0        =   1;          //guard bit for precision/rounding
@@ -29,7 +30,6 @@ input                                               isZ_op_i;
 input                                               isInf_op_i;
 input                                               isSNAN_op_i;
 input                                               isQNAN_op_i;
-input                                               isDN_op_i;
 //outputs
 output logic    [LAMP_FLOAT_S_DW-1:0]               s_res_o;
 output logic    [LAMP_FLOAT_E_DW-1:0]               e_res_o;
@@ -64,11 +64,11 @@ logic									    isCheckSignRes;
 
 
 logic                                                       compare_sqrt2;
-logic   [(LAMP_FLOAT_F_DW + G0 + 2)-1 : 0]                  lut_output;                 //lut output wf+g0+2 bits
+logic   [(LAMP_FLOAT_F_DW + G0 + 2+2)-1 : 0]                  lut_output;                 //lut output wf+g0+2 bits
 logic   [(LAMP_FLOAT_F_DW+1)-1 : 0]                         f_temp;                     //(M-1)*(+-1)= (1.F-1)*(+-1) -> wf+1 bits          
 logic   [LAMP_FLOAT_S_DW-1:0]                               s_intermediate, s_intermediate_n;
 logic   [(LAMP_FLOAT_E_DW + LAMP_FLOAT_F_DW + G1)-1 : 0]    e_intermediate, e_intermediate_n;             //X = result of log(2)*exp -> we+wf+g1 bits
-logic   [(2*LAMP_FLOAT_F_DW+G0+3)-1 : 0]                    f_intermediate, f_intermediate_n;             //Y = result of f_temp*lut_ouput -> 2wf+g0+3 bits
+logic   [(2*LAMP_FLOAT_F_DW+G0+3+1)-1 : 0]                    f_intermediate, f_intermediate_n;             //Y = result of f_temp*lut_ouput -> 2wf+g0+3 bits
 logic   [(LAMP_FLOAT_E_DW+2*LAMP_FLOAT_F_DW+G0+2)-1 : 0]    res_preNorm;                //Z = X + Y -> we+2wf+g0+2 bits
 logic                                                       is_f_temp_negative, is_f_temp_negative_n;
 
@@ -181,7 +181,7 @@ begin
 
             
             
-            f_intermediate_n = f_temp * lut_output;   //result in xx.yyyy(...) (2bit . 16bit)
+            f_intermediate_n = f_temp * lut_output;   //result in xxx.yyyyy(...) (3bit . 16bit)
 
             if(s_intermediate_n)     //if the sign is positive, we have to complement and the exponent 
             begin
@@ -195,14 +195,14 @@ begin
         end
         OUT:
         begin
-            {isCheckNanInfValid, isCheckNanRes, isCheckInfRes, isCheckSignRes} = FUNC_calcInfNanResLog(isZ_op_i, isInf_op_i, isSNAN_op_i, isQNAN_op_i, isDN_op_i, s_op_i);
+            {isCheckNanInfValid, isCheckNanRes, isCheckInfRes, isCheckSignRes} = FUNC_calcInfNanResLog(isZ_op_i, isInf_op_i, isSNAN_op_i, isQNAN_op_i, s_op_i);
             if(is_f_temp_negative ^ s_intermediate)       // A xor B
             begin
-                res_preNorm = {e_intermediate ,6'b0} - {6'b0, f_intermediate};  //result in xxxxxxxxx.yyyyyy(...) (9bit . 16bit)
+                res_preNorm = {e_intermediate ,6'b0} - {5'b0, f_intermediate};  //result in xxxxxxxxx.yyyyyy(...) (9bit . 16bit)
             end
             else
             begin
-                res_preNorm = {e_intermediate ,6'b0} + {6'b0, f_intermediate};
+                res_preNorm = {e_intermediate ,6'b0} + {5'b0, f_intermediate};
             end
 
 

@@ -157,8 +157,6 @@ output	logic							isReady_o;
 	logic	[$clog2(1+LAMP_FLOAT_F_DW)-1:0]	nlz_op1_r;
 	logic	[(1+LAMP_FLOAT_F_DW)-1:0] 		extShF_op2_r;
 	logic	[$clog2(1+LAMP_FLOAT_F_DW)-1:0]	nlz_op2_r;
-	//	log only
-	logic									isDN_op1_r;
 
 	//	pre-operation wires/regs
 	logic	[LAMP_FLOAT_S_DW-1:0] 			s_op1_wire;
@@ -484,8 +482,6 @@ output	logic							isReady_o;
 			nlz_op1_r		<=	'0;
 			extShF_op2_r	<=	'0;
 			nlz_op2_r		<=	'0;
-			//	log only
-			isDN_op1_r		<=	'0;
 		end
 		else
 		begin
@@ -515,8 +511,6 @@ output	logic							isReady_o;
 			nlz_op1_r		<=	nlz_op1_wire;
 			extShF_op2_r	<=	extShF_op2_wire;
 			nlz_op2_r		<=	nlz_op2_wire;
-			// log only
-			isDN_op1_r		<=  isDN_op1_wire;
 		end
 	end
 
@@ -761,7 +755,6 @@ output	logic							isReady_o;
 			.isInf_op_i			    (isInf_op1_r),
 			.isSNAN_op_i			(isSNAN_op1_r),
 			.isQNAN_op_i			(isQNAN_op1_r),
-			.isDN_op_i				(isDN_op1_r),
 			//	outputs
 			.s_res_o				(log_s_res),
 			.e_res_o				(log_e_res),
