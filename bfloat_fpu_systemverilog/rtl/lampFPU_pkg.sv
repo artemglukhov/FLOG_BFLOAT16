@@ -714,25 +714,24 @@ package lampFPU_pkg;
 	
 	parameter G0        =   1;
 	function automatic logic[(LAMP_FLOAT_E_DW+LAMP_FLOAT_F_DW+3)-1:0] FUNC_fix2float_log(	//8bit exp, 7bit mant, guard, round, sticky
-		input [(LAMP_FLOAT_E_DW+2*LAMP_FLOAT_F_DW+G0+2+1)-1 : 0] res_preNorm
+		input [(LAMP_FLOAT_E_DW+2*LAMP_FLOAT_F_DW+G0+1)-1 : 0] res_preNorm
 	);
 		casez(res_preNorm)
-            25'b1????????????????????????: return {(24-16+LAMP_FLOAT_E_BIAS),res_preNorm[23:15],(|res_preNorm[14:12])};
-			25'b01???????????????????????: return {(23-16+LAMP_FLOAT_E_BIAS),res_preNorm[22:14],(|res_preNorm[13:11])};
-			25'b001??????????????????????: return {(22-16+LAMP_FLOAT_E_BIAS),res_preNorm[21:13],(|res_preNorm[12:10])};
-			25'b0001?????????????????????: return {(21-16+LAMP_FLOAT_E_BIAS),res_preNorm[20:12],(|res_preNorm[11: 9])};
-			25'b00001????????????????????: return {(20-16+LAMP_FLOAT_E_BIAS),res_preNorm[19:11],(|res_preNorm[10: 8])};
-			25'b000001???????????????????: return {(19-16+LAMP_FLOAT_E_BIAS),res_preNorm[18:10],(|res_preNorm[ 9: 7])};
-			25'b0000001??????????????????: return {(18-16+LAMP_FLOAT_E_BIAS),res_preNorm[17: 9],(|res_preNorm[ 8: 6])};
-			25'b00000001?????????????????: return {(17-16+LAMP_FLOAT_E_BIAS),res_preNorm[16: 8],(|res_preNorm[ 7: 5])};
-			25'b000000001????????????????: return {(16-16+LAMP_FLOAT_E_BIAS),res_preNorm[15: 7],(|res_preNorm[ 6: 4])};
-			25'b0000000001???????????????: return {(15-16+LAMP_FLOAT_E_BIAS),res_preNorm[14: 6],(|res_preNorm[ 5: 3])};
-			25'b00000000001??????????????: return {(14-16+LAMP_FLOAT_E_BIAS),res_preNorm[13: 5],(|res_preNorm[ 4: 2])};
-			25'b000000000001?????????????: return {(13-16+LAMP_FLOAT_E_BIAS),res_preNorm[12: 4],(|res_preNorm[ 3: 1])};
-			25'b0000000000001????????????: return {(12-16+LAMP_FLOAT_E_BIAS),res_preNorm[11: 3],(|res_preNorm[ 2: 0])};
-			25'b00000000000001???????????: return {(11-16+LAMP_FLOAT_E_BIAS),res_preNorm[10: 2],(|res_preNorm[ 1:0])};
-			25'b00000000000000???????????: return {(10-16+LAMP_FLOAT_E_BIAS),res_preNorm[ 9: 1],(res_preNorm[0])};			//to keep track also of lower numbers (less than LSB -> zero)
-		endcase
+            24'b1???????????????????????: return {(23-16+LAMP_FLOAT_E_BIAS),res_preNorm[22:14],(|res_preNorm[13:11])};
+            24'b01??????????????????????: return {(22-16+LAMP_FLOAT_E_BIAS),res_preNorm[21:13],(|res_preNorm[12:10])};
+            24'b001?????????????????????: return {(21-16+LAMP_FLOAT_E_BIAS),res_preNorm[20:12],(|res_preNorm[11: 9])};
+            24'b0001????????????????????: return {(20-16+LAMP_FLOAT_E_BIAS),res_preNorm[19:11],(|res_preNorm[10: 8])};
+            24'b00001???????????????????: return {(19-16+LAMP_FLOAT_E_BIAS),res_preNorm[18:10],(|res_preNorm[ 9: 7])};
+            24'b000001??????????????????: return {(18-16+LAMP_FLOAT_E_BIAS),res_preNorm[17: 9],(|res_preNorm[ 8: 6])};
+            24'b0000001?????????????????: return {(17-16+LAMP_FLOAT_E_BIAS),res_preNorm[16: 8],(|res_preNorm[ 7: 5])};
+            24'b00000001????????????????: return {(16-16+LAMP_FLOAT_E_BIAS),res_preNorm[15: 7],(|res_preNorm[ 6: 4])};
+            24'b000000001???????????????: return {(15-16+LAMP_FLOAT_E_BIAS),res_preNorm[14: 6],(|res_preNorm[ 5: 3])};
+            24'b0000000001??????????????: return {(14-16+LAMP_FLOAT_E_BIAS),res_preNorm[13: 5],(|res_preNorm[ 4: 2])};
+            24'b00000000001?????????????: return {(13-16+LAMP_FLOAT_E_BIAS),res_preNorm[12: 4],(|res_preNorm[ 3: 1])};
+            24'b000000000001????????????: return {(12-16+LAMP_FLOAT_E_BIAS),res_preNorm[11: 3],(|res_preNorm[ 2: 0])};
+            24'b0000000000001???????????: return {(11-16+LAMP_FLOAT_E_BIAS),res_preNorm[10: 2],(|res_preNorm[ 1:0])};
+            24'b0000000000000???????????: return {(10-16+LAMP_FLOAT_E_BIAS),res_preNorm[ 9: 1],(res_preNorm[0])};            //to keep track also of lower numbers (less than LSB -> zero)
+        endcase
 
 	endfunction
 
@@ -744,34 +743,34 @@ package lampFPU_pkg;
 	* 		ln(-x)			->		NaN
 	*/
 	function automatic logic[3:0] FUNC_calcInfNanResLog (
-				input isZ_op_i, input isInf_op_i, input isSNan_op_i, input isQNan_op_i, input s_op_i
-			);
+                input isZ_op_i, input isInf_op_i, input isSNan_op_i, input isQNan_op_i, input s_op_i
+            );
 
-		logic isNan_op_i = isSNan_op_i || isQNan_op_i;
-		logic isValidRes, isNanRes, isInfRes, signRes;							//signRes is the sign of the special case output
+        logic isNan_op_i = isSNan_op_i || isQNan_op_i;
+        logic isValidRes, isNanRes, isInfRes, signRes;                            //signRes is the sign of the special case output
 
-		isValidRes	= (isZ_op_i || isInf_op_i || isNan_op_i || s_op_i) ? 1 : 0;			//signal that tells us if the result is a special case
+        isValidRes    = (isZ_op_i || isInf_op_i || isNan_op_i || s_op_i) ? 1 : 0;            //signal that tells us if the result is a special case
 
-		case({isZ_op_i, isInf_op_i, isNan_op_i, s_op_i})
-			4'b00_00: begin isNanRes = 0; isInfRes = 0; signRes = 0;			end
-			4'b00_01: begin	isNanRes = 1; isInfRes = 0; signRes = 0;			end		//ln(x<0) returns NaN; sign is not important for a NaN so use the same sign of the operand
-			4'b00_10: begin	isNanRes = 1; isInfRes = 0; signRes = 0;			end		//ln(NaN) returns NaN; sign is not important for a NaN so use the same sign of the operand
-			4'b00_11: begin isNanRes = 1; isInfRes = 0; signRes = 0;			end		//ln(NaN) returns NaN; sign is not important for a NaN so use the same sign of the operand
-			4'b01_00: begin	isNanRes = 0; isInfRes = 1; signRes = 0;			end		//ln(+inf) returns +inf
-			4'b01_01: begin isNanRes = 1; isInfRes = 0;	signRes = 0;			end		//ln(-inf) returns NaN; sign is not important for a NaN so use the same sign of the operand
-			4'b01_10: begin isNanRes = 0; isInfRes = 0; signRes = 0;			end		//impossible!
-			4'b01_11: begin isNanRes = 0; isInfRes = 0; signRes = 0;			end		//impossible!
-			4'b10_00: begin	isNanRes = 0; isInfRes = 1; signRes = 1;			end     //ln(zero+) or ln(DN) returns -inf
-			4'b10_01: begin isNanRes = 1; isInfRes = 0; signRes = 0;			end		//ln(zero-) or ln(DN<0) returns Nan; sign is not important for a NaN so use the same sign of the operand
-			4'b10_10: begin isNanRes = 0; isInfRes = 0; signRes = 0;			end		//impossible!
-			4'b10_11: begin isNanRes = 0; isInfRes = 0; signRes = 0;			end		//impossible!
-			4'b11_00: begin isNanRes = 0; isInfRes = 0; signRes = 0;			end		//impossible!
-			4'b11_01: begin isNanRes = 0; isInfRes = 0; signRes = 0;			end		//impossible!
-			4'b11_10: begin isNanRes = 0; isInfRes = 0; signRes = 0;			end		//impossible!
-			4'b11_11: begin isNanRes = 0; isInfRes = 0; signRes = 0;			end		//impossible!
-		endcase
+        case({isZ_op_i, isInf_op_i, isNan_op_i, s_op_i})
+            4'b00_00: begin isNanRes = 0; isInfRes = 0; signRes = 0;            end
+            4'b00_01: begin    isNanRes = 1; isInfRes = 0; signRes = 0;            end        //ln(x<0) returns NaN; sign is not important for a NaN so use the same sign of the operand
+            4'b00_10: begin    isNanRes = 1; isInfRes = 0; signRes = 0;            end        //ln(NaN) returns NaN; sign is not important for a NaN so use the same sign of the operand
+            4'b00_11: begin isNanRes = 1; isInfRes = 0; signRes = 0;            end        //ln(NaN) returns NaN; sign is not important for a NaN so use the same sign of the operand
+            4'b01_00: begin    isNanRes = 0; isInfRes = 1; signRes = 0;            end        //ln(+inf) returns +inf
+            4'b01_01: begin isNanRes = 1; isInfRes = 0;    signRes = 0;            end        //ln(-inf) returns NaN; sign is not important for a NaN so use the same sign of the operand
+            4'b01_10: begin isNanRes = 0; isInfRes = 0; signRes = 0;            end        //impossible!
+            4'b01_11: begin isNanRes = 0; isInfRes = 0; signRes = 0;            end        //impossible!
+            4'b10_00: begin    isNanRes = 0; isInfRes = 1; signRes = 1;            end     //ln(zero+) or ln(DN) returns -inf
+            4'b10_01: begin isNanRes = 1; isInfRes = 0; signRes = 0;            end        //ln(zero-) or ln(DN<0) returns Nan; sign is not important for a NaN so use the same sign of the operand
+            4'b10_10: begin isNanRes = 0; isInfRes = 0; signRes = 0;            end        //impossible!
+            4'b10_11: begin isNanRes = 0; isInfRes = 0; signRes = 0;            end        //impossible!
+            4'b11_00: begin isNanRes = 0; isInfRes = 0; signRes = 0;            end        //impossible!
+            4'b11_01: begin isNanRes = 0; isInfRes = 0; signRes = 0;            end        //impossible!
+            4'b11_10: begin isNanRes = 0; isInfRes = 0; signRes = 0;            end        //impossible!
+            4'b11_11: begin isNanRes = 0; isInfRes = 0; signRes = 0;            end        //impossible!
+        endcase
 
-		return {isValidRes, isNanRes, isInfRes, signRes};
-	endfunction
+        return {isValidRes, isNanRes, isInfRes, signRes};
+    endfunction
 
 endpackage
