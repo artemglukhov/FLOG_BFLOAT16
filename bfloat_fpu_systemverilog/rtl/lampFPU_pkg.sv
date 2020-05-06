@@ -747,27 +747,27 @@ package lampFPU_pkg;
             );
 
         logic isNan_op_i = isSNan_op_i || isQNan_op_i;
-        logic isValidRes, isNanRes, isInfRes, signRes;                            //signRes is the sign of the special case output
+        logic isValidRes, isNanRes, isInfRes, signRes;                            			//signRes is the sign of the special case output
 
-        isValidRes    = (isZ_op_i || isInf_op_i || isNan_op_i || s_op_i) ? 1 : 0;            //signal that tells us if the result is a special case
+        isValidRes    = (isZ_op_i || isInf_op_i || isNan_op_i || s_op_i) ? 1 : 0;			//signal that tells us if the result is a special case
 
         case({isZ_op_i, isInf_op_i, isNan_op_i, s_op_i})
             4'b00_00: begin isNanRes = 0; isInfRes = 0; signRes = 0;            end
-            4'b00_01: begin    isNanRes = 1; isInfRes = 0; signRes = 0;            end        //ln(x<0) returns NaN; sign is not important for a NaN so use the same sign of the operand
-            4'b00_10: begin    isNanRes = 1; isInfRes = 0; signRes = 0;            end        //ln(NaN) returns NaN; sign is not important for a NaN so use the same sign of the operand
-            4'b00_11: begin isNanRes = 1; isInfRes = 0; signRes = 0;            end        //ln(NaN) returns NaN; sign is not important for a NaN so use the same sign of the operand
-            4'b01_00: begin    isNanRes = 0; isInfRes = 1; signRes = 0;            end        //ln(+inf) returns +inf
-            4'b01_01: begin isNanRes = 1; isInfRes = 0;    signRes = 0;            end        //ln(-inf) returns NaN; sign is not important for a NaN so use the same sign of the operand
-            4'b01_10: begin isNanRes = 0; isInfRes = 0; signRes = 0;            end        //impossible!
-            4'b01_11: begin isNanRes = 0; isInfRes = 0; signRes = 0;            end        //impossible!
-            4'b10_00: begin    isNanRes = 0; isInfRes = 1; signRes = 1;            end     //ln(zero+) or ln(DN) returns -inf
-            4'b10_01: begin isNanRes = 1; isInfRes = 0; signRes = 0;            end        //ln(zero-) or ln(DN<0) returns Nan; sign is not important for a NaN so use the same sign of the operand
-            4'b10_10: begin isNanRes = 0; isInfRes = 0; signRes = 0;            end        //impossible!
-            4'b10_11: begin isNanRes = 0; isInfRes = 0; signRes = 0;            end        //impossible!
-            4'b11_00: begin isNanRes = 0; isInfRes = 0; signRes = 0;            end        //impossible!
-            4'b11_01: begin isNanRes = 0; isInfRes = 0; signRes = 0;            end        //impossible!
-            4'b11_10: begin isNanRes = 0; isInfRes = 0; signRes = 0;            end        //impossible!
-            4'b11_11: begin isNanRes = 0; isInfRes = 0; signRes = 0;            end        //impossible!
+            4'b00_01: begin isNanRes = 1; isInfRes = 0; signRes = 0;            end     	//ln(x<0) returns NaN
+            4'b00_10: begin isNanRes = 1; isInfRes = 0; signRes = 0;            end     	//ln(NaN) returns NaN
+            4'b00_11: begin isNanRes = 1; isInfRes = 0; signRes = 0;            end        	//ln(NaN) returns NaN
+            4'b01_00: begin isNanRes = 0; isInfRes = 1; signRes = 0;            end     	//ln(+inf) returns +inf
+            4'b01_01: begin isNanRes = 1; isInfRes = 0; signRes = 0;            end     	//ln(-inf) returns NaN
+            4'b01_10: begin isNanRes = 0; isInfRes = 0; signRes = 0;            end        	//impossible!
+            4'b01_11: begin isNanRes = 0; isInfRes = 0; signRes = 0;            end        	//impossible!
+            4'b10_00: begin isNanRes = 0; isInfRes = 1; signRes = 1;            end			//ln(zero+) returns -inf
+            4'b10_01: begin isNanRes = 1; isInfRes = 0; signRes = 0;            end        	//ln(zero-) returns Nan
+            4'b10_10: begin isNanRes = 0; isInfRes = 0; signRes = 0;            end        	//impossible!
+            4'b10_11: begin isNanRes = 0; isInfRes = 0; signRes = 0;            end        	//impossible!
+            4'b11_00: begin isNanRes = 0; isInfRes = 0; signRes = 0;            end        	//impossible!
+            4'b11_01: begin isNanRes = 0; isInfRes = 0; signRes = 0;            end        	//impossible!
+            4'b11_10: begin isNanRes = 0; isInfRes = 0; signRes = 0;            end        	//impossible!
+            4'b11_11: begin isNanRes = 0; isInfRes = 0; signRes = 0;            end        	//impossible!
         endcase
 
         return {isValidRes, isNanRes, isInfRes, signRes};
