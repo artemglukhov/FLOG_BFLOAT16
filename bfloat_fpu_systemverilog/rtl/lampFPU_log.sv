@@ -11,8 +11,7 @@ module lampFPU_log (
 );
 
 import lampFPU_pkg::*;
-parameter SQRT2     =   8'b10110101;                                    //1.4140625 sqrt(2) in 8 bit-> 1.0110101                                                     
-                                     
+parameter SQRT2     =   8'b10110101;                                    //1.4140625 sqrt(2) in 8 bit-> 1.0110101  
 
 parameter G0        =   1;                                              //guard bit for precision/rounding
 parameter G1        =   3;                                              //guard bit for precision/rounding
@@ -46,13 +45,13 @@ output logic                                        isToRound_o;
 
 logic   [LAMP_FLOAT_E_DW  :0]               e_op_r;                     //register of the input exponent- 1bit padding for overflow correction
 logic   [LAMP_FLOAT_F_DW  :0]               f_op_r;                     //register of the input fractional, padded for hidden bit
-logic   [LAMP_FLOAT_S_DW-1:0]               s_res_r, s_res_r_n;
-logic   [LAMP_FLOAT_E_DW-1:0]               e_res_r, e_res_r_n;
-logic   [(1+1+LAMP_FLOAT_F_DW+3)-1:0]       f_res_r, f_res_r_n;
-logic									    valid, valid_n;
-logic									    isOverflow;
-logic									    isUnderflow;
-logic									    isToRound;
+logic   [LAMP_FLOAT_S_DW-1:0]               s_res_r_n;
+logic   [LAMP_FLOAT_E_DW-1:0]               e_res_r_n;
+logic   [(1+1+LAMP_FLOAT_F_DW+3)-1:0]       f_res_r_n;
+logic									    valid_n;
+logic									    isOverflow_n;
+logic									    isUnderflow_n;
+logic									    isToRound_n;
 
 logic									    stickyBit;
 
@@ -75,11 +74,10 @@ logic                                                       is_f_temp_negative, 
 // 							state enum							//
 //////////////////////////////////////////////////////////////////
 
-	typedef enum logic [1:0]
+	typedef enum logic 
 	{
-		IDLE	= 'd0,
-		WORK	= 'd1,
-		OUT	    = 'd2
+		WORK	= 'd0,
+		OUT	    = 'd1
     }	ssLog;
 
 	ssLog 	ss, ss_next;
@@ -102,7 +100,7 @@ begin
         isUnderflow_o       <= '0;
         isToRound_o         <= '0;
 
-        ss                  <= IDLE;
+        ss                  <= WORK;
         is_f_temp_negative  <= '0;
         s_intermediate      <= '0;
         e_intermediate      <= '0;
@@ -115,9 +113,9 @@ begin
         e_res_o             <= e_res_r_n;
         f_res_o             <= f_res_r_n;
         valid_o             <= valid_n;
-        isOverflow_o	    <= isOverflow;
-        isUnderflow_o	    <= isUnderflow;
-        isToRound_o		    <= isToRound;
+        isOverflow_o	    <= isOverflow_n;
+        isUnderflow_o	    <= isUnderflow_n;
+        isToRound_o		    <= isToRound_n;
 
         ss                  <= ss_next;
         is_f_temp_negative  <= is_f_temp_negative_n;
@@ -134,64 +132,63 @@ end
 always_comb
 begin
     ss_next                 =   ss;
+
+    s_res_r_n               =   s_res_o;
+    e_res_r_n               =   e_res_o;
+    f_res_r_n               =   f_res_o;
     is_f_temp_negative_n    =   is_f_temp_negative;
     s_intermediate_n        =   s_intermediate;
     e_intermediate_n        =   e_intermediate;
     f_intermediate_n        =   f_intermediate;
-    valid_n                 =   valid;
-    isOverflow              =   1'b0;                                                       //never goes to overflow
-    isUnderflow             =   1'b0;                                                       //never goes to underflow
+    valid_n                 =   1'b0;
+    isOverflow_n            =   1'b0;                                                       //never goes to overflow
+    isUnderflow_n           =   1'b0;                                                       //never goes to underflow
+    isToRound_n             =   1'b0;
 
     case(ss)
-        IDLE:
-        begin
-            if(doLog_i)
-                ss_next = WORK;
-        end
         WORK:
         begin
-            compare_sqrt2 = (extF_op1_i > SQRT2) ? 1'b1 : 1'b0;                             //compare F with square root of 2
-            
-
-            if(compare_sqrt2)
+            if(doLog_i)
             begin
-                f_op_r  = (extF_op1_i >> 1);                                                //fractional part divided by 2
-                e_op_r  = extE_op1_i - LAMP_FLOAT_E_BIAS + 1;                               //exponent - bias + 1
+                compare_sqrt2 = (extF_op1_i > SQRT2) ? 1'b1 : 1'b0;                             //compare F with square root of 2
+
+                if(compare_sqrt2)
+                begin
+                    f_op_r  = (extF_op1_i >> 1);                                                //fractional part divided by 2
+                    e_op_r  = extE_op1_i - LAMP_FLOAT_E_BIAS + 1;                               //exponent - bias + 1
+                end
+                else
+                begin
+                    f_op_r  = extF_op1_i;                                                       //fractional part
+                    e_op_r  = extE_op1_i - LAMP_FLOAT_E_BIAS;                                   //exponent - bias
+                end
+                
+                f_temp = f_op_r - (128);                                                        // f_op_r - 1.0 
+                lut_output = LUT_log(f_op_r);                                                   //f(x) = log(x)/(x-1)
+
+                if(f_temp[(LAMP_FLOAT_F_DW+1)-1])                                               //if the first bit is 1 -> negative value so we make it positive
+                begin
+                    f_temp  = (~f_temp) + 1;
+                    is_f_temp_negative_n = 1;
+                end
+                else
+                begin
+                    is_f_temp_negative_n = 0;
+                end
+
+                s_intermediate_n = (|e_op_r) ? e_op_r[LAMP_FLOAT_E_DW] : compare_sqrt2;         //if E=0 sign=compare_sqrt2; if E!=0 sign=MSB of e_op_r
+
+                f_intermediate_n = f_temp * lut_output;                                         //result in xxx.yyyyy(...) (3bit . 16bit)
+
+                if(s_intermediate_n)                                                            //if the sign is positive, we have to complement the exponent 
+                begin
+                    e_op_r         = (~e_op_r) + 1;
+                end
+
+                e_intermediate_n = e_op_r[LAMP_FLOAT_E_DW-1:0] * LOG2;                          //result in xxxxxxxxx.yyyyyyyyyy (8bit . 10bit)
+
+                ss_next = OUT;
             end
-            else
-            begin
-                f_op_r  = extF_op1_i;                                                       //fractional part
-                e_op_r  = extE_op1_i - LAMP_FLOAT_E_BIAS;                                   //exponent - bias
-            end
-            
-            f_temp = f_op_r - (128);                                                        // f_op_r - 1.0 
-            lut_output = LUT_log(f_op_r);                                                   //f(x) = log(x)/(x-1)
-
-            if(f_temp[(LAMP_FLOAT_F_DW+1)-1])                                               //if the first bit is 1 -> negative value so we make it positive
-            begin
-                f_temp  = (~f_temp) + 1;
-                is_f_temp_negative_n = 1;
-            end
-            else
-            begin
-                is_f_temp_negative_n = 0;
-            end
-
-            s_intermediate_n = (|e_op_r) ? e_op_r[LAMP_FLOAT_E_DW] : compare_sqrt2;         //if E=0 sign=compare_sqrt2; if E!=0 sign=MSB of e_op_r
-
-            
-            
-            f_intermediate_n = f_temp * lut_output;                                         //result in xxx.yyyyy(...) (3bit . 16bit)
-
-            if(s_intermediate_n)                                                            //if the sign is positive, we have to complement the exponent 
-            begin
-                e_op_r         = (~e_op_r) + 1;
-            end
-
-            e_intermediate_n = e_op_r[LAMP_FLOAT_E_DW-1:0] * LOG2;                          //result in xxxxxxxxx.yyyyyyyyyy (8bit . 10bit)
-
-
-            ss_next = OUT;
         end
         OUT:
         begin
@@ -215,8 +212,6 @@ begin
                 res_preNorm = {e_intermediate ,6'b0} + {5'b0, f_intermediate};          //24 bit, resPreNorm never overflows
             end
 
-
-
             unique if(isCheckNanRes)
                 {s_res_r_n, e_res_r_n, f_res_r_n}     =   {isCheckSignRes, QNAN_E_F, 5'b0};
             else if(isCheckInfRes)
@@ -227,17 +222,11 @@ begin
                 f_res_r_n                             =   {1'b0, 1'b1, f_res_r_n[11:2]};
             end
 
-
             valid_n = 1'b1;        
-            isToRound = ~isCheckNanInfValid;                                            //result is to round if it is not a special case
+            isToRound_n = ~isCheckNanInfValid;                                            //result is to round if it is not a special case
 
-            ss_next = IDLE;
+            ss_next = WORK;
         end
     endcase
-
-    
-    
-
 end
-
 endmodule

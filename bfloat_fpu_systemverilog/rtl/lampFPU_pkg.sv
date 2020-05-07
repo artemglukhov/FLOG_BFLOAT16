@@ -730,7 +730,10 @@ package lampFPU_pkg;
             24'b00000000001?????????????: return {(13-16+LAMP_FLOAT_E_BIAS),res_preNorm[12: 4],(|res_preNorm[ 3: 1])};
             24'b000000000001????????????: return {(12-16+LAMP_FLOAT_E_BIAS),res_preNorm[11: 3],(|res_preNorm[ 2: 0])};
             24'b0000000000001???????????: return {(11-16+LAMP_FLOAT_E_BIAS),res_preNorm[10: 2],(|res_preNorm[ 1:0])};
-            24'b0000000000000???????????: return {(10-16+LAMP_FLOAT_E_BIAS),res_preNorm[ 9: 1],(res_preNorm[0])};            //to keep track also of lower numbers (less than LSB -> zero)
+            24'b00000000000001??????????: return {(10-16+LAMP_FLOAT_E_BIAS),res_preNorm[ 9: 1],(res_preNorm[0])};            
+			24'b000000000000000000000000: return {8'b00000000,res_preNorm[ 8: 0],(res_preNorm[0])};            		//the actual zero
+			24'b000000000000001?????????: return {( 9-16+LAMP_FLOAT_E_BIAS),res_preNorm[ 8: 0],(res_preNorm[0])};            
+            24'b000000000000000?????????: return {( 8-16+LAMP_FLOAT_E_BIAS),res_preNorm[ 8: 0],(res_preNorm[0])};	//to keep track also of lower numbers (less than LSB -> zero)
         endcase
 
 	endfunction
