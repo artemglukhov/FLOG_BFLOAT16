@@ -14,7 +14,7 @@
 //
 // Date: 30.09.2019
 
-#include "C:/Xilinx/Vivado/2018.2/data/xsim/include/svdpi.h"
+#include "/opt/Xilinx/Vivado/2018.2/data/xsim/include/svdpi.h"
 #include <stdio.h>
 #include <math.h>
 
@@ -247,24 +247,8 @@ DPI_flog(unsigned int op1)
 {
 	//unsigned -> float
 	float f_op = *((float*) &op1);
-	/* bitmask for denormal numbers				
-	 *	0 00000000 0101010
-	 *  1 11111111 0000000 &
-	 *  0 00000000 0000000	== 0	<-- the number is a denorm
-     *
-	 *  0 00000100 0101010
-	 *  1 11111111 0000000 &
-	 *  0 00000100 0000000	!= 0	<-- the number is not a denorm
-	 */
-
-	//if(op1 & 0b11111111100000000000000000000000){
-		//perform fdiv	
-		float f_res = log(f_op);
-		return *((unsigned int*) &f_res);
-	//}
-	//else return ((unsigned int) (0b11111111100000000000000000000000));
-	// return 32bit float encoding
-	
+	float f_res = log(f_op);
+	return *((unsigned int*) &f_res);
 }
 
 // int
