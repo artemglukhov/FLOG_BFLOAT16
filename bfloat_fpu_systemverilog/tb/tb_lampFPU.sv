@@ -112,6 +112,10 @@ module tb_lampFPU;
 		int								numTest;
 		numTest				=	0;
 		
+		/*
+		 *		Bruteforce test for Logarithm operation
+		 */
+
 		for(int i=0; i<=255; i++)
         begin
             for(int j=0; j<=127; j++)
@@ -124,19 +128,6 @@ module tb_lampFPU;
                 TASK_doArith_op (opcode, {1'd0, op1_exponent, op1_fraction}, {1'd0, i, j});
             end
         end
-//        TASK_doArith_op (opcode, {1'd0, 8'b10101010, 7'b1010100}, {1'd0, 8'b10101010, 7'b1010100});
-//        TASK_doArith_op (opcode, {1'd1, 8'b10101010, 7'b1010100}, {1'd0, 8'b10101010, 7'b1010100});
-//        TASK_doArith_op (opcode, {1'd0, 8'b10101010, 7'b1010100}, {1'd0, 8'b10101010, 7'b1010100});
-//        TASK_doArith_op (opcode, {1'd0, 8'b11111111, 7'b0000001}, {1'd0, 8'b10101010, 7'b1010100});
-//        TASK_doArith_op (opcode, {1'd0, 8'b11111111, 7'b0000000}, {1'd0, 8'b10101010, 7'b1010100});
-//        TASK_doArith_op (opcode, {1'd0, 8'b10101010, 7'b1010100}, {1'd0, 8'b10101010, 7'b1010100});
-        
-//        TASK_doArith_op (opcode, {1'd0, 8'b01010101, 7'b0011010}, {1'd0, 8'b01010101, 7'b0011010});
-//        TASK_doArith_op (opcode, {1'd0, 8'b01010101, 7'b0011010}, {1'd0, 8'b01010101, 7'b0011010});
-//        TASK_doArith_op (opcode, {1'd0, 8'b01000101, 7'b1001010}, {1'd0, 8'b01010101, 7'b0011010});
-//        TASK_doArith_op (opcode, {1'd0, 8'b01010101, 7'b0011010}, {1'd0, 8'b01010101, 7'b0011010});
-//        TASK_doArith_op (opcode, {1'd0, 8'b01000101, 7'b1001010}, {1'd0, 8'b01010101, 7'b0011010});
-//        TASK_doArith_op (opcode, {1'd0, 8'b01010101, 7'b0011010}, {1'd0, 8'b01010101, 7'b0011010});
 
 //		repeat (100)
 //		begin
@@ -309,10 +300,6 @@ module tb_lampFPU;
 		@(posedge clk);
 		opcodeFPU_i_tb	<=	FPU_IDLE;
 		wait (isResultValid_o_tb);
-		//$display("%b, %b, %b", op1[LAMP_FLOAT_DW-1], op1[LAMP_FLOAT_DW-2-:LAMP_FLOAT_E_DW], op1[0+:LAMP_FLOAT_F_DW]);
-        //$display("%b, %b, %b", result_o_tb[LAMP_FLOAT_DW-1], result_o_tb[LAMP_FLOAT_DW-2-:LAMP_FLOAT_E_DW], result_o_tb[0+:LAMP_FLOAT_F_DW]);
-        //$display("%b, %b, %b", tb_res[31], tb_res[30-:LAMP_FLOAT_E_DW], tb_res[30-LAMP_FLOAT_E_DW-:LAMP_FLOAT_F_DW]);
-        //$display("");
 		$display ("OP1 - S=%b E=0x%02x f=0x%x", op1[LAMP_FLOAT_DW-1], op1[LAMP_FLOAT_DW-2-:LAMP_FLOAT_E_DW], op1[0+:LAMP_FLOAT_F_DW]);
 		$display ("OP2 - S=%b E=0x%02x f=0x%x", op2[LAMP_FLOAT_DW-1], op2[LAMP_FLOAT_DW-2-:LAMP_FLOAT_E_DW], op2[0+:LAMP_FLOAT_F_DW]);
 		if (tb_res[31-:LAMP_FLOAT_DW] !== result_o_tb)

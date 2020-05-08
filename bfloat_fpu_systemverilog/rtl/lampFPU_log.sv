@@ -1,8 +1,26 @@
+// Copyright 2019 Politecnico di Milano.
+// Copyright and related rights are licensed under the Solderpad Hardware
+// Licence, Version 2.0 (the "Licence"); you may not use this file except in
+// compliance with the Licence. You may obtain a copy of the Licence at
+// https://solderpad.org/licenses/SHL-2.0/. Unless required by applicable law
+// or agreed to in writing, software, hardware and materials distributed under
+// this Licence is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+// CONDITIONS OF ANY KIND, either express or implied. See the Licence for the
+// specific language governing permissions and limitations under the Licence.
+//
+// Authors (in alphabetical order):
+// Andrea Buffoli       <andrea.buffoli@polimi.it>
+// Matteo Giacomello    <matteo.giacomello@polimi.it>
+// Artem Glukhov        <artem.glukhov@polimi.it>
+// Giacomo Ticchi       <giacomo.ticchi@polimi.it>
+//
+// Date: 08.05.2020
+
 module lampFPU_log (
     clk,rst,
     //inputs
     doLog_i,
-    s_op_i, extE_op1_i, extF_op1_i,
+    s_op_i, extE_op_i, extF_op_i,
     isZ_op_i, isInf_op_i, isSNAN_op_i, isQNAN_op_i,
 
     //outputs
@@ -17,13 +35,13 @@ parameter G0        =   1;                                              //guard 
 parameter G1        =   3;                                              //guard bit for precision/rounding
 parameter LOG2      =   10'b1011000101;                                 //0.6931471806;
 
-input                                       clk;
-input                                       rst;
+input                                               clk;
+input                                               rst;
 //inputs
 input                                               doLog_i;
 input           [LAMP_FLOAT_S_DW-1:0]               s_op_i;
-input           [LAMP_FLOAT_E_DW:0]                 extE_op1_i;
-input           [LAMP_FLOAT_F_DW:0]                 extF_op1_i;
+input           [(LAMP_FLOAT_E_DW-1)+1:0]           extE_op_i;
+input           [(LAMP_FLOAT_F_DW-1)+1:0]           extF_op_i;
 input                                               isZ_op_i;
 input                                               isInf_op_i;
 input                                               isSNAN_op_i;
@@ -43,8 +61,8 @@ output logic                                        isToRound_o;
 
 
 
-logic   [LAMP_FLOAT_E_DW  :0]               e_op_r;                     //register of the input exponent- 1bit padding for overflow correction
-logic   [LAMP_FLOAT_F_DW  :0]               f_op_r;                     //register of the input fractional, padded for hidden bit
+logic   [(LAMP_FLOAT_E_DW-1)+1:0]           e_op_r;                     //register of the input exponent - 1bit padding for overflow correction
+logic   [(LAMP_FLOAT_F_DW-1)+1:0]           f_op_r;                     //register of the input fractional, padded for hidden bit
 logic   [LAMP_FLOAT_S_DW-1:0]               s_res_r_n;
 logic   [LAMP_FLOAT_E_DW-1:0]               e_res_r_n;
 logic   [(1+1+LAMP_FLOAT_F_DW+3)-1:0]       f_res_r_n;
@@ -68,7 +86,7 @@ logic   [LAMP_FLOAT_S_DW-1:0]                               s_intermediate, s_in
 logic   [(LAMP_FLOAT_E_DW + LAMP_FLOAT_F_DW + G1)-1 : 0]    e_intermediate, e_intermediate_n;               //X = result of log(2)*exp -> we+wf+g1 bits
 logic   [(2*LAMP_FLOAT_F_DW+G0+3+1)-1 : 0]                  f_intermediate, f_intermediate_n;               //Y = result of f_temp*lut_ouput -> 2wf+g0+4 bits
 logic   [(LAMP_FLOAT_E_DW+2*LAMP_FLOAT_F_DW+G0+1)-1 : 0]    res_preNorm;                                    //Z = X + Y -> we+2wf+g0+1 bits
-logic                                                       is_f_temp_negative, is_f_temp_negative_n;
+logic                                                       is_f_temp_negative, is_f_temp_negative_n;       //flag for sign check
 
 //////////////////////////////////////////////////////////////////
 // 							state enum							//
@@ -100,6 +118,7 @@ begin
         isUnderflow_o       <= '0;
         isToRound_o         <= '0;
 
+        //FSM registers
         ss                  <= WORK;
         is_f_temp_negative  <= '0;
         s_intermediate      <= '0;
@@ -117,6 +136,7 @@ begin
         isUnderflow_o	    <= isUnderflow_n;
         isToRound_o		    <= isToRound_n;
 
+        //FSM registers
         ss                  <= ss_next;
         is_f_temp_negative  <= is_f_temp_negative_n;
         s_intermediate      <= s_intermediate_n;
@@ -150,23 +170,23 @@ begin
         begin
             if(doLog_i)
             begin
-                compare_sqrt2 = (extF_op1_i > SQRT2) ? 1'b1 : 1'b0;                             //compare F with square root of 2
+                compare_sqrt2 = (extF_op_i > SQRT2) ? 1'b1 : 1'b0;                             //compare F with square root of 2
 
                 if(compare_sqrt2)
                 begin
-                    f_op_r  = (extF_op1_i >> 1);                                                //fractional part divided by 2
-                    e_op_r  = extE_op1_i - LAMP_FLOAT_E_BIAS + 1;                               //exponent - bias + 1
+                    f_op_r  = (extF_op_i >> 1);                                                //fractional part divided by 2
+                    e_op_r  = extE_op_i - LAMP_FLOAT_E_BIAS + 1;                               //exponent - bias + 1
                 end
                 else
                 begin
-                    f_op_r  = extF_op1_i;                                                       //fractional part
-                    e_op_r  = extE_op1_i - LAMP_FLOAT_E_BIAS;                                   //exponent - bias
+                    f_op_r  = extF_op_i;                                                       //fractional part
+                    e_op_r  = extE_op_i - LAMP_FLOAT_E_BIAS;                                   //exponent - bias
                 end
                 
                 f_temp = f_op_r - (128);                                                        // f_op_r - 1.0 
                 lut_output = LUT_log(f_op_r);                                                   //f(x) = log(x)/(x-1)
 
-                if(f_temp[(LAMP_FLOAT_F_DW+1)-1])                                               //if the first bit is 1 -> negative value so we make it positive
+                if(f_temp[(LAMP_FLOAT_F_DW+1)-1])                                               //if the first bit is 1 (negative value) -> we make it positive
                 begin
                     f_temp  = (~f_temp) + 1;
                     is_f_temp_negative_n = 1;
@@ -219,7 +239,7 @@ begin
             else
             begin
                 {s_res_r_n, e_res_r_n, f_res_r_n}     =   {s_intermediate, FUNC_fix2float_log(res_preNorm), 2'b00};         //fixed point to floating point
-                f_res_r_n                             =   {1'b0, 1'b1, f_res_r_n[11:2]};
+                f_res_r_n                             =   {1'b0, 1'b1, f_res_r_n[11:2]};                                    //adding overflow and hidden bit
             end
 
             valid_n = 1'b1;        
