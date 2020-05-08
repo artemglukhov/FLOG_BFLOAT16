@@ -8,11 +8,6 @@
 \usepackage{mathtools}
 \usepackage{multirow}
 \usepackage{relsize}
-\usepackage{fancyhdr}
-%\pagestyle{fancy}
-\usepackage{multicol}
-\usepackage{titlecaps}
-\usepackage{titlesec}
 
 \definecolor{medium-blue}{rgb}{0,0,1}
 \definecolor{mygray}{rgb}{0.8,0.8,0.8}
@@ -22,35 +17,6 @@
 
 \begin{document}
 
-%\vspace{3cm}
-%\begin{center}
-%\bigskip
-%\Large{\today}
-%\vspace{0.5cm}
-
-%{\titlecap{Embedded Systems} 
-%\vspace{0.3cm}}\\
-%\vspace{0.4cm}
-%\bigskip
-%\rule{\linewidth}{0.5mm}
-%\titlecap{Natural logarithm implementation for BFloat16 FPU}\\
-%\vspace{0.4cm}
-%\titlecap{REV. 0.1}
-%\end{center}
-
-%\vfill
-%\begin{multicols}{2}
-%\includegraphics[height=3cm]{images/Logo_Polimi}
-
-%\raggedright{\textbf{Authors} (in alphabetical order): {\\
-%Andrea Buffoli\\
-%Matteo Giacomello\\
-%Artem Glukhov\\
-%Giacomo Ticchi}\\
-%}
-%\end{multicols}
-
-%\clearpage
 
 % Title Page
 \title{Natural logarithm implementation for BFloat16 FPU}
@@ -64,13 +30,13 @@ Giacomo Ticchi
 
 \maketitle
 \begin{abstract}
-The goal of the project is to add the support for the FLOG operation to a Floating Point Unit and verify the correctness against the results produced by the corresponding C function.
+The goal of the project is to add the support for the natural logarithm operation to a Floating Point Unit and verify the correctness against the results produced by the corresponding C function.
 Thus we designed a module which calculates the natural logarithm of a number in bfloat16 floating-point format (Brain Floating Point) and provides the result in the same format. 
 
 \end{abstract}
 
 \chapter{Algorithm and Architecture}
-Considering only the case where the input X s a valid positive bfloat16 number, i.e.
+Considering only the case where the input X is a valid positive bfloat16 number, i.e.
 
 $$X=F*2^{(E-E_0)}$$
 \\If we calculate its natural logarithm, we obtain:
@@ -78,7 +44,7 @@ $$X=F*2^{(E-E_0)}$$
 $$R = log(X) = log(F)+(E-E_0)*log(2)$$
 Therefore the evaluation of the result is divided in two main parts:
 \begin{itemize}
-\item computation of $log(F)$ with$ F \in [0,2)$
+\item computation of $log(F)$ with $ F \in [0,2)$
 \item computation of the product $(E-E_0)*log(2)$
 \end{itemize}
 In order to get a better accuracy the output range of $log(F)$ is centered around zero in the following way:
@@ -113,7 +79,7 @@ Input operators different from the X specified above are handeled as special cas
 \newpage
 %\vspace{5mm} %5mm vertical space
 %\vfill
-The architecture we implemented is the following (slightly re-arranged from the paper by Florent de Dinechin and Jérémie Detrey\footnote{\href{https://hal-ens-lyon.archives-ouvertes.fr/ensl-00542213/file/DetreyDinechinJMM.pdf} {Parameterized floating-point logarithm and exponentialfunctions for FPGAs} }):
+The architecture we implemented is the following (slightly re-arranged from the paper by Florent de Dinechin and J\'{e}r\'{e}mie Detrey\footnote{\href{https://hal-ens-lyon.archives-ouvertes.fr/ensl-00542213/file/DetreyDinechinJMM.pdf} {Parameterized floating-point logarithm and exponential functions for FPGAs} }):
 \begin{figure}[h]
   \centering
     \includegraphics[width=0.7\textwidth]{images/block_diagram.jpg}
