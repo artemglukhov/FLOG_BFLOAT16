@@ -82,17 +82,23 @@ figure;
 histogram(diff(:,2), 100);                                      %plotta un istogramma degli errori con 100 bins
 txt_std_dev = sprintf('std dev=%f', std_dev);
 text(0.2, 500, txt_std_dev);
-figure;
+xlabel("error");
+ylabel("#");
 
+figure;
 stem(diff(:,1),diff(:,2));                                      %asse X: log_input    asse Y: errore
 txt_avg_error = sprintf('avg error=%f', avg_error);
 text(30,-0.3, txt_avg_error);
 axis([-150 150 -0.6 0.6]);
-figure;
+xlabel("output");
+ylabel("error");
 
+figure;
 stem(diff(:,1), perc_error);                                    %asse X: log_input    asse Y: errore percentuale
 txt_perc_error = sprintf('avg perc error=%f', avg_perc_error);
 text(25,0.9, txt_perc_error);
 axis([-150 150 0 1]);
+xlabel("output");
+ylabel("percentage error");
 
 grid on;
