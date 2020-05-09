@@ -82,7 +82,7 @@ Input operators different from the X specified above are handeled as special cas
 The architecture we implemented is the following (slightly re-arranged from the paper by Florent de Dinechin and J\'{e}r\'{e}mie Detrey\footnote{\href{https://hal-ens-lyon.archives-ouvertes.fr/ensl-00542213/file/DetreyDinechinJMM.pdf} {Parameterized floating-point logarithm and exponential functions for FPGAs} }):
 \begin{figure}[h]
   \centering
-    \includegraphics[width=0.7\textwidth]{images/block_diagram.jpg}
+    \includegraphics[width=0.6\textwidth]{images/block_diagram.jpg}
     \caption{Block design of the implemented algorithm}
 \end{figure}
 \newline
@@ -92,6 +92,7 @@ Some considerations:
 \item The conversion from Fixed Point format to Bfloat16 is made with a “mask”.
 \item The sign of the result is the sign of $(E-E_{0})$ (its MSB) when $(E-E_{0})\neq0$; otherwise it is given by the comparison between $F$ and $\sqrt{2}$.
 \item Overflow and Underflow conditions are never met because the non-infinite output range goes from $[-92.0; +88.5]$ and the smallest ouput is $3.9e^{-3}$ (in modulus) so both the largest and smallest possible outputs are representable in Bfloat16 format.
+\item The module supports denormal numbers with respect to the one proposed by the paper: the LUT is  implemented with an input range between $[\dfrac{\sqrt{2}}{2}; \sqrt{2}]$ while we have used an input range between $[2^{-7};\sqrt{2}]$ which solves the problem.    
 \end{itemize}
     
 
@@ -110,7 +111,7 @@ The errors are more significant with respect to the simulations based on the DPI
 \begin{figure}[ht]
   \centering
     \includegraphics[width=0.7\textwidth]{images/avg_err.jpg}
-    \caption{Committed error.}
+    \caption{Errors with respect to Matlab results.}
 \end{figure}
 
 \begin{figure}[]
@@ -203,6 +204,6 @@ The algorithm had to be divided into a finite state machine with two states, bec
     \caption{example waveforms of the Log module.}
 \end{figure}
 
-The simulation was done with the support of a Direct Programming Interface (DPI) that calculates the natural logarithm with the $math.h$ C library performed on a 32bit float value, and returns a 32bit floating point value, that then is transformed to bfloat16 by truncation. This translates into a discrepancy between some results calculated by the DPI and the ones calculated by the FPU-RTL module, with an error that is no bigger than 1LSB, due to the rounding to the next even performed on the FPU-RTL output.
+The simulation was done with the support of a Direct Programming Interface (DPI) that calculates the natural logarithm with the $math.h$ C library performed on a 32bit float value, and returns a 32bit floating point value, that then is transformed to bfloat16 by truncation. This translates into a little discrepancy between some results calculated by the DPI and the ones calculated by the FPU-RTL module due to the rounding to the next even performed on the FPU-RTL output.
 
 \end{document}          
